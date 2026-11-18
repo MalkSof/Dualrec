@@ -13,8 +13,16 @@ apps/desktop/src-tauri/binaries/*
 # Entorno
 .env
 .env.*
+!.env.example
 *.log
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+
+# API (Python)
+.venv/
+__pycache__/
+*.db
+.dev-token
+.pytest_cache/

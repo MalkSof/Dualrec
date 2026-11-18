@@ -7,6 +7,7 @@ import {
   formatClock,
   formatSize,
   type CameraDesc,
+  type CloudConfig,
   type Devices,
   type Manifest,
   type ScreenTarget,
@@ -32,6 +33,9 @@ const settings = reactive({
   bubble: true,
   hideFromCapture: true,
   outDir: "",
+  cloudOn: false,
+  apiUrl: "",
+  apiToken: "",
 });
 
 try {
@@ -53,7 +57,12 @@ const status = ref<Status>({
   screen_frames: 0,
   mic_peak: 0,
   camera_active: false,
+  cloud: null,
+  uploads_active: 0,
 });
+const cloudTest = ref<{ ok: boolean; text: string } | null>(null);
+const cloudTesting = ref(false);
+const linkCopied = ref(false);
 const level = ref(0);
 const busy = ref<"" | "starting" | "stopping">("");
 const error = ref("");
@@ -70,6 +79,69 @@ const hasSource = computed(
     (settings.micOn && micReady.value) ||
     settings.systemOn,
 );
+
+const cloudConfig = computed<CloudConfig | null>(() =>
+  settings.cloudOn && settings.apiUrl.trim() && settings.apiToken.trim()
+    ? { api_url: settings.apiUrl.trim(), token: settings.apiToken.trim() }
+    : null,
+);
+
+/** Subida de la grabación que se está mostrando (la última o la que está en curso). */
+const cloud = computed(() => {
+  const c = status.value.cloud;
+  if (!c) return null;
+  if (recording.value) return c;
+  return last.value && c.dir === last.value.dir ? c : null;
+});
+
+const cloudLabel = computed(() => {
+  const c = cloud.value;
+  if (!c) return "";
+  const pct = c.total_bytes ? Math.round((c.uploaded_bytes / c.total_bytes) * 100) : 0;
+  switch (c.state) {
+    case "connecting":
+      return "Conectando con la nube…";
+    case "uploading":
+      return recording.value ? `Subiendo · ${formatSize(c.uploaded_bytes)}` : `Subiendo · ${pct}%`;
+    case "offline":
+      return "Sin conexión · se retoma sola";
+    case "finishing":
+      return "Terminando la subida…";
+    case "done":
+      return "En la nube";
+    default:
+      return c.error ?? "No se pudo subir";
+  }
+});
+
+async function testCloud() {
+  if (!settings.apiUrl.trim() || !settings.apiToken.trim()) return;
+  cloudTesting.value = true;
+  try {
+    const name = await api.cloudCheck({ api_url: settings.apiUrl.trim(), token: settings.apiToken.trim() });
+    cloudTest.value = { ok: true, text: `Conectado como ${name}` };
+  } catch (e) {
+    cloudTest.value = { ok: false, text: String(e) };
+  } finally {
+    cloudTesting.value = false;
+  }
+}
+
+async function copyLink(link: string) {
+  linkCopied.value = await api.copyText(link);
+  setTimeout(() => (linkCopied.value = false), 1800);
+}
+
+/** Retoma subidas que quedaron a medias (sin internet o app cerrada). */
+async function resumePending() {
+  if (cloudConfig.value && settings.outDir) {
+    try {
+      await api.resumeUploads(cloudConfig.value, settings.outDir);
+    } catch {
+      /* se vuelve a intentar al abrir la app */
+    }
+  }
+}
 
 const screenTarget = computed<ScreenTarget | null>(() => {
   if (settings.screenMode === "monitor") return { kind: "monitor", index: settings.monitorIndex };
@@ -186,6 +258,8 @@ async function start() {
         max_height: settings.maxHeight || null,
         cursor: settings.cursor,
       },
+      cloud: cloudConfig.value,
+      title: null,
     });
     last.value = null;
     status.value = { ...status.value, recording: true, paused: false, elapsed_ms: 0 };
@@ -248,6 +322,7 @@ watch(() => [settings.micOn, settings.micName], applyMic);
 watch(() => settings.bubble, syncBubble);
 watch(() => settings.hideFromCapture, (v) => void api.setCaptureHidden(v));
 watch(() => settings.outDir, loadRecent);
+watch(cloudConfig, resumePending);
 
 let timer = 0;
 let unlisten: UnlistenFn | undefined;
@@ -257,6 +332,12 @@ onMounted(async () => {
   void api.setCaptureHidden(settings.hideFromCapture);
   void api.encoder().then((e) => (encoder.value = e));
   await Promise.all([applyCamera(), applyMic(), loadRecent()]);
+  const defaults = await api.cloudDefaults().catch(() => null);
+  if (defaults && !settings.apiUrl && !settings.apiToken) {
+    [settings.apiUrl, settings.apiToken] = defaults;
+    settings.cloudOn = true;
+  }
+  void resumePending();
 
   timer = window.setInterval(async () => {
     try {
@@ -326,6 +407,7 @@ onBeforeUnmount(() => {
           <span class="dot" :class="{ paused: status.paused }" />
           {{ status.paused ? "PAUSA" : "REC" }} {{ formatClock(status.elapsed_ms) }}
         </div>
+        <div v-if="recording && cloud" class="cloud-pill" :class="cloud.state">{{ cloudLabel }}</div>
       </section>
 
       <section v-if="last" class="card">
@@ -339,6 +421,14 @@ onBeforeUnmount(() => {
           <code>{{ t.file }}</code>
           <small>{{ trackLabel(t) }} · {{ formatSize(t.size_bytes) }}</small>
           <div v-if="t.error" class="err">{{ t.error }}</div>
+        </div>
+        <div v-if="cloud" class="cloud-row" :class="cloud.state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96 6 6 0 0 1 11.66 1.5A3.75 3.75 0 0 1 17.5 18H7Z" /></svg>
+          <span>
+            {{ cloudLabel }}
+            <small v-if="cloud.share_url" :title="cloud.share_url">{{ cloud.share_url }}</small>
+          </span>
+          <button v-if="cloud.share_url" class="ghost" @click="copyLink(cloud.share_url)">{{ linkCopied ? "¡Copiado!" : "Copiar link" }}</button>
         </div>
         <div class="card-foot" />
       </section>
@@ -470,6 +560,24 @@ onBeforeUnmount(() => {
         <div class="opt">
           <span>Carpeta de grabaciones<small :title="settings.outDir">{{ settings.outDir }}</small></span>
           <button class="ghost" :disabled="recording" @click="pickFolder">Cambiar</button>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary>Nube <small>{{ settings.cloudOn ? (cloudConfig ? "activada" : "falta configurar") : "desactivada" }}</small></summary>
+        <label class="opt first">
+          <span>Subir a la nube mientras grabo<small>Al cortar, el link para compartir queda en el portapapeles</small></span>
+          <button class="switch" role="switch" :aria-checked="settings.cloudOn" :disabled="recording" @click="settings.cloudOn = !settings.cloudOn" />
+        </label>
+        <div class="fields">
+          <label for="api-url">Dirección de Dualrec</label>
+          <input id="api-url" v-model="settings.apiUrl" class="text" type="url" placeholder="https://api.tu-dominio.com" spellcheck="false" :disabled="recording" />
+          <label for="api-token">Token de acceso</label>
+          <input id="api-token" v-model="settings.apiToken" class="text" type="password" placeholder="dr_…" autocomplete="off" spellcheck="false" :disabled="recording" />
+          <div class="test">
+            <button class="ghost" :disabled="cloudTesting || !settings.apiUrl.trim() || !settings.apiToken.trim()" @click="testCloud">{{ cloudTesting ? "Probando…" : "Probar conexión" }}</button>
+            <small v-if="cloudTest" :class="cloudTest.ok ? 'good' : 'bad'">{{ cloudTest.text }}</small>
+          </div>
         </div>
       </details>
 

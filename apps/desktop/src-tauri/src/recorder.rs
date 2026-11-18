@@ -32,6 +32,17 @@ pub struct RecOptions {
     /// Alto máximo de la pista de pantalla (p. ej. 1080); `None` = nativo.
     pub max_height: Option<u32>,
     pub cursor: bool,
+    /// Conserva los MP4 fragmentados al cortar: los necesita la subida a la nube.
+    #[serde(default)]
+    pub keep_parts: bool,
+}
+
+/// Nombre del archivo fragmentado de una pista: `screen.mp4` -> `screen.part.mp4`.
+pub fn part_name(file: &str) -> String {
+    match file.rsplit_once('.') {
+        Some((stem, ext)) => format!("{stem}.part.{ext}"),
+        None => format!("{file}.part"),
+    }
 }
 
 pub struct CameraSource {
@@ -118,6 +129,7 @@ pub struct Session {
     system: Option<AudioCapture>,
     workers: Vec<Worker>,
     pub screen_frames: Arc<AtomicU64>,
+    keep_parts: bool,
 }
 
 fn read_log(log: &Path) -> String {
@@ -359,8 +371,8 @@ impl Session {
             child: Child,
         }
         let spawn_track = |track: Track, args_for: &dyn Fn(&Path) -> Vec<String>| -> Result<Pending> {
-            let (stem, ext) = track.file.rsplit_once('.').unwrap();
-            let part = dir.join(format!("{stem}.part.{ext}"));
+            let stem = track.file.rsplit_once('.').map(|x| x.0).unwrap_or(&track.file);
+            let part = dir.join(part_name(&track.file));
             let log = dir.join(format!("{stem}.log"));
             let child = ffmpeg::spawn(&args_for(&part), &log)?;
             Ok(Pending {
@@ -399,7 +411,9 @@ impl Session {
             };
             video_pending.push((spawn_track(track, &|p| ffmpeg::video_args(&spec, p))?, "screen"));
         }
-        let cam_fps = sources.camera.as_ref().map(|c| c.fps.clamp(5, 60).min(fps.max(30)));
+        // La pista de cámara va a 30 fps fijos: si la cámara entrega menos se
+        // repiten cuadros y si entrega más se saltean, siempre contra el reloj común.
+        let cam_fps = sources.camera.as_ref().map(|_| 30u32);
         if let (Some(cam), Some((w, h))) = (&sources.camera, camera_size) {
             let spec = VideoSpec {
                 pix_fmt: "rgb24",
@@ -525,6 +539,7 @@ impl Session {
             system,
             workers,
             screen_frames,
+            keep_parts: opts.keep_parts,
         })
     }
 
@@ -571,11 +586,15 @@ impl Session {
             };
             match finalized {
                 Ok(()) => {
-                    let _ = std::fs::remove_file(&w.part);
+                    if !self.keep_parts {
+                        let _ = std::fs::remove_file(&w.part);
+                    }
                 }
                 Err(e) => {
                     // El fragmentado igual se puede reproducir: se conserva.
-                    if w.part.exists() && std::fs::rename(&w.part, &out).is_err() {
+                    if self.keep_parts {
+                        let _ = std::fs::copy(&w.part, &out);
+                    } else if w.part.exists() && std::fs::rename(&w.part, &out).is_err() {
                         track.file = w.part.file_name().unwrap().to_string_lossy().into_owned();
                     }
                     track.error.get_or_insert(e.to_string());

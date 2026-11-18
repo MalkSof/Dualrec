@@ -772,3 +772,115 @@ kbd {
   position: absolute;
   inset: 0;
 }
+
+/* ---------- Nube ---------- */
+
+.cloud-pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(8, 9, 13, 0.78);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 600;
+  color: #b9c6ff;
+}
+
+.cloud-pill.offline,
+.cloud-row.offline svg {
+  color: var(--warn);
+}
+
+.cloud-pill.failed,
+.cloud-row.failed svg {
+  color: var(--rec-2);
+}
+
+.cloud-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 14px 0;
+  padding: 9px 10px;
+  border-radius: 10px;
+  background: var(--card-2);
+  font-size: 13px;
+}
+
+.cloud-row svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+}
+
+.cloud-row.done svg {
+  color: var(--ok);
+}
+
+.cloud-row span {
+  flex: 1;
+  min-width: 0;
+}
+
+.cloud-row small {
+  display: block;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  user-select: text;
+}
+
+.opt.first {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 4px 14px 14px;
+}
+
+.fields label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.text {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  user-select: text;
+}
+
+.text:hover:not(:disabled) {
+  border-color: #3a4256;
+}
+
+.test {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.test small {
+  min-width: 0;
+  user-select: text;
+}
+
+.good {
+  color: var(--ok);
+}
+
+.bad {
+  color: var(--rec-2);
+}

@@ -54,6 +54,8 @@ export interface StartRequest {
     max_height: number | null;
     cursor: boolean;
   };
+  cloud: CloudConfig | null;
+  title: string | null;
 }
 export interface Track {
   kind: "screen" | "camera" | "mic" | "system";
@@ -79,6 +81,18 @@ export interface Manifest {
   dir: string;
   tracks: Track[];
 }
+export interface CloudConfig {
+  api_url: string;
+  token: string;
+}
+export interface CloudProgress {
+  dir: string;
+  state: "connecting" | "uploading" | "offline" | "finishing" | "done" | "failed";
+  uploaded_bytes: number;
+  total_bytes: number;
+  share_url: string | null;
+  error: string | null;
+}
 export interface Status {
   recording: boolean;
   paused: boolean;
@@ -86,6 +100,8 @@ export interface Status {
   screen_frames: number;
   mic_peak: number;
   camera_active: boolean;
+  cloud: CloudProgress | null;
+  uploads_active: number;
 }
 
 export const api = {
@@ -102,6 +118,11 @@ export const api = {
   status: () => invoke<Status>("get_status"),
   recordings: (dir: string) => invoke<Manifest[]>("list_recordings", { dir }),
   openFolder: (path: string) => invoke<void>("open_folder", { path }),
+  copyText: (text: string) => invoke<boolean>("copy_text", { text }),
+  cloudDefaults: () => invoke<[string, string] | null>("cloud_defaults"),
+  cloudCheck: (cloud: CloudConfig) => invoke<string>("cloud_check", { cloud }),
+  resumeUploads: (cloud: CloudConfig, dir: string) =>
+    invoke<number>("resume_uploads", { cloud, dir }),
   setBubble: (visible: boolean) => invoke<void>("set_bubble", { visible }),
   setCaptureHidden: (hidden: boolean) => invoke<void>("set_capture_hidden", { hidden }),
 };

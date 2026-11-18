@@ -2,7 +2,7 @@
 
 Grabador estilo Loom que guarda **pantalla, cámara, micrófono y audio del sistema en pistas separadas**, listas para editar. Es la primera pieza de un producto más grande: subir las grabaciones a la nube y consultarlas con IA (ver [Hoja de ruta](#hoja-de-ruta)).
 
-> **Estado: etapa 1 — grabador local (Windows).** La app graba y deja una carpeta por grabación con `screen.mp4`, `camera.mp4`, `mic.m4a` y `system.m4a` sincronizados. La nube, el procesamiento y la IA son las etapas siguientes.
+> **Estado: etapas 1 y 2.** La app (Windows) graba y deja una carpeta por grabación con `screen.mp4`, `camera.mp4`, `mic.m4a` y `system.m4a` sincronizados; si se activa la nube, las sube mientras graba y deja un link para compartir con reproductor web. El procesamiento con IA son las etapas siguientes.
 
 ## Qué hace hoy
 
@@ -22,6 +22,34 @@ Videos/Dualrec/2026-11-18_18-05-48/
 └── session.json   manifiesto: pistas, duración, offsets, tamaños
 ```
 
+## Nube y link para compartir
+
+En **Ajustes → Nube** de la app se carga la dirección de la API y el token de acceso. Con eso activado:
+
+- Cada pista se sube **mientras se graba**, en partes de 8 MB, directo al almacenamiento.
+- Al cortar, el **link para compartir queda en el portapapeles**. El reproductor web muestra la pantalla con la cámara en una burbuja que se puede ocultar, y permite bajar cada pista.
+- **Si se corta internet, la grabación sigue** y la subida se retoma sola cuando vuelve la conexión.
+- **Si la app se cierra a mitad**, al reabrirla retoma las subidas pendientes desde donde quedaron (el estado se guarda en `upload.json`, dentro de la carpeta de la grabación).
+
+Para probar todo en una sola máquina, sin Docker ni cuentas en la nube:
+
+```powershell
+cd apps/api;  uv sync;  uv run python dev.py     # API en :8000 con almacenamiento simulado
+cd apps/web;  npm install;  npm run dev          # web en :5173
+```
+
+y en la app usar `http://127.0.0.1:8000` con el token que imprime `dev.py`. Más detalle en [apps/api](apps/api/README.md) y [apps/web](apps/web/README.md).
+
+### Producción: todo en AWS
+
+Los videos van a **S3**, la base a **RDS PostgreSQL**, la API a **ECS Fargate** y la web a **S3 + CloudFront**, todo bajo un mismo dominio con HTTPS. Se despliega con un comando:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File infra/aws/deploy.ps1 -AdminEmail vos@ejemplo.com
+```
+
+Arquitectura, costo aproximado y detalles en [infra/aws](infra/aws/README.md).
+
 ## Estructura del monorepo
 
 ```
@@ -29,8 +57,10 @@ apps/
   desktop/        App de escritorio (Tauri 2 + Vue 3 + TypeScript)
     src/          Interfaz: ventana principal y burbuja
     src-tauri/    Motor de captura en Rust
-  api/            (etapa 2) API en FastAPI
-  web/            (etapa 2) SPA en Vue 3: biblioteca, reproductor, chat
+  api/            API en FastAPI: videos, subida multipart, link para compartir
+  web/            SPA en Vue 3: reproductor y biblioteca
+infra/
+  aws/            Plantillas de CloudFormation y script de despliegue
 scripts/
   fetch-ffmpeg.ps1   Baja el FFmpeg que se empaqueta con la app
   make-icon.ps1      Genera el ícono fuente
@@ -46,6 +76,7 @@ scripts/
 | `audio.rs` | Micrófono y audio del sistema (WASAPI loopback) |
 | `ffmpeg.rs` | Sidecar de FFmpeg: detección de encoder y argumentos |
 | `recorder.rs` | Orquesta una grabación: pistas, sincronía, manifiesto |
+| `cloud.rs` | Subida multipart mientras se graba, con reintentos y reanudación |
 | `preview.rs` | Servidor local MJPEG para la burbuja |
 | `main.rs` | Comandos de Tauri, atajos globales y autoprueba |
 
@@ -62,6 +93,8 @@ scripts/
 | `serde`, `serde_json` | Manifiesto `session.json` y mensajes con la interfaz |
 | `chrono`, `dirs`, `anyhow` | Nombres de carpeta, rutas del usuario y errores |
 | `tauri-plugin-global-shortcut`, `tauri-plugin-dialog` | Atajos globales y selector de carpeta |
+| `ureq` | Cliente HTTP simple y bloqueante para la subida (corre en su propio hilo) |
+| `arboard` | Copiar el link para compartir al portapapeles |
 
 ## Cómo se sincronizan las pistas
 
@@ -135,14 +168,17 @@ Variables útiles en desarrollo: `DUALREC_ENCODER=x264|nvenc|qsv|amf` fuerza el 
 ## Diferencias con la especificación original
 
 - **Captura de pantalla**: se usa `windows-capture` directamente en lugar de `scap`. En Windows `scap` es una capa sobre ese mismo crate, y usarlo directo da control del ritmo de cuadros, del borde amarillo y del cursor. El backend de macOS se suma detrás del mismo módulo.
-- **Fragmentos en disco**: cada pista se escribe como MP4 fragmentado desde el primer segundo (seguro ante cierres). El troceado en partes de 8 MB para la subida multipart es de la etapa 2.
+- **Fragmentos en disco**: en vez de escribir archivos sueltos de 8 MB, cada pista se graba como un único MP4 fragmentado (seguro ante cierres) y la subida lo va leyendo en partes de 8 MB a medida que crece. El resultado es el mismo y en disco queda un solo archivo por pista.
+- **Procesamiento mínimo en la etapa 2**: al cerrar un video la API reempaqueta cada pista (sin recodificar) para que el navegador pueda saltar a cualquier minuto. Corre como tarea en segundo plano de FastAPI; Celery + Redis entran en la etapa 3, cuando haya trabajo pesado.
+- **Todo en AWS**: la especificación mencionaba DigitalOcean Spaces; el almacenamiento, la base, la API y la web van en AWS (S3, RDS, ECS Fargate, CloudFront).
+- **Acceso por token**: la especificación no define el inicio de sesión. Por ahora cada usuario tiene un token de acceso que se crea por consola; el registro con usuario y contraseña queda para cuando haya planes y equipos.
 
 ## Hoja de ruta
 
 | Etapa | Entrega | Estado |
 | --- | --- | --- |
 | 1. Grabador local | App que graba pantalla, cámara, micrófono y audio del sistema en archivos separados | Windows listo · macOS pendiente |
-| 2. Nube | API FastAPI, subida multipart reanudable, link para compartir | Pendiente |
+| 2. Nube | API FastAPI, subida multipart reanudable, link para compartir | Lista, probada en local · falta desplegarla en AWS |
 | 3. Procesamiento | Video compuesto, transcripción, resumen y capítulos | Pendiente |
 | 4. Chat con IA | Segmentos con embeddings, chat con citas al minuto | Pendiente |
 | 5. MCP + visual | Servidor MCP e indexado de lo que se ve en pantalla | Pendiente |

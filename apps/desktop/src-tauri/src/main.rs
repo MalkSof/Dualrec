@@ -4,6 +4,7 @@
 mod audio;
 mod camera;
 mod clock;
+mod cloud;
 mod ffmpeg;
 mod preview;
 mod recorder;
@@ -11,6 +12,7 @@ mod screen;
 
 use audio::{AudioCapture, AudioSource};
 use camera::{CamShared, CameraHandle};
+use cloud::{CloudConfig, CloudProgress, Upload, UploadState};
 use parking_lot::Mutex;
 use recorder::{CameraSource, Manifest, RecOptions, Session, Sources};
 use screen::ScreenTarget;
@@ -25,6 +27,8 @@ struct AppState {
     camera: Mutex<Option<CameraHandle>>,
     mic: Mutex<Option<Arc<AudioCapture>>>,
     session: Mutex<Option<Session>>,
+    /// Subidas a la nube de esta ejecución; la más nueva va primero.
+    uploads: Mutex<Vec<Arc<Upload>>>,
     preview_port: u16,
 }
 
@@ -164,6 +168,43 @@ struct StartRequest {
     mic: bool,
     system_audio: bool,
     options: RecOptions,
+    /// Si viene, la grabación se sube a la nube mientras se graba.
+    #[serde(default)]
+    cloud: Option<CloudConfig>,
+    #[serde(default)]
+    title: Option<String>,
+}
+
+/// Estado inicial de la subida de una grabación recién empezada.
+fn upload_state(manifest: &Manifest, cfg: &CloudConfig, title: Option<String>) -> UploadState {
+    UploadState {
+        api_url: cfg.api_url.clone(),
+        client_id: manifest.id.clone(),
+        title: title
+            .filter(|t| !t.trim().is_empty())
+            .unwrap_or_else(|| format!("Grabación {}", manifest.id.replace('_', " "))),
+        recorded_at: manifest.recorded_at.clone(),
+        video_id: None,
+        share_url: None,
+        part_size: 0,
+        duration_ms: None,
+        tracks: manifest
+            .tracks
+            .iter()
+            .map(|t| cloud::TrackState {
+                kind: t.kind.clone(),
+                codec: t.codec.clone(),
+                width: t.width,
+                height: t.height,
+                offset_ms: t.offset_ms,
+                file: recorder::part_name(&t.file),
+                track_id: None,
+                parts: Vec::new(),
+            })
+            .collect(),
+        completed: false,
+        failed: None,
+    }
 }
 
 #[tauri::command(async)]
@@ -202,8 +243,17 @@ fn start_recording(state: State<AppState>, request: StartRequest) -> CmdResult<M
         mic,
         system_audio: request.system_audio,
     };
-    let s = Session::start(sources, &request.options).map_err(err)?;
+    let mut options = request.options;
+    options.keep_parts = request.cloud.is_some();
+    let s = Session::start(sources, &options).map_err(err)?;
     let manifest = s.manifest.clone();
+    if let Some(cfg) = request.cloud {
+        // Si la subida no puede arrancar, la grabación local sigue igual.
+        let initial = upload_state(&manifest, &cfg, request.title);
+        if let Ok(upload) = Upload::spawn(s.dir.clone(), cfg, initial) {
+            state.uploads.lock().insert(0, upload);
+        }
+    }
     *session = Some(s);
     Ok(manifest)
 }
@@ -235,7 +285,69 @@ fn stop_recording(state: State<AppState>) -> CmdResult<Manifest> {
         .lock()
         .take()
         .ok_or("No hay una grabación en curso.")?;
-    Ok(session.stop())
+    Ok(finish_session(&state, session))
+}
+
+/// Corta la grabación y, si se estaba subiendo, avisa a la subida que ya no
+/// llegan más datos y deja el link para compartir en el portapapeles.
+fn finish_session(state: &AppState, session: Session) -> Manifest {
+    let dir = session.dir.clone();
+    let manifest = session.stop();
+    let upload = state.uploads.lock().iter().find(|u| u.dir == dir).cloned();
+    if let Some(upload) = upload {
+        upload.finish(manifest.duration_ms);
+        if let Some(link) = upload.share_url() {
+            copy_to_clipboard(&link);
+        }
+    }
+    manifest
+}
+
+fn copy_to_clipboard(text: &str) -> bool {
+    arboard::Clipboard::new()
+        .and_then(|mut c| c.set_text(text.to_string()))
+        .is_ok()
+}
+
+#[tauri::command(async)]
+fn copy_text(text: String) -> bool {
+    copy_to_clipboard(&text)
+}
+
+/// En desarrollo, DUALREC_API_URL y DUALREC_TOKEN precargan los ajustes de nube.
+#[tauri::command]
+fn cloud_defaults() -> Option<(String, String)> {
+    Some((std::env::var("DUALREC_API_URL").ok()?, std::env::var("DUALREC_TOKEN").ok()?))
+}
+
+/// Verifica la URL de la API y el token; devuelve el nombre del usuario.
+#[tauri::command(async)]
+fn cloud_check(cloud: CloudConfig) -> CmdResult<String> {
+    cloud::check(&cloud).map_err(err)
+}
+
+/// Retoma las subidas que quedaron pendientes en `dir` (app cerrada, sin
+/// internet, etc.). Devuelve cuántas se retomaron.
+#[tauri::command(async)]
+fn resume_uploads(state: State<AppState>, cloud: CloudConfig, dir: String) -> usize {
+    let recording_dir = state.session.lock().as_ref().map(|s| s.dir.clone());
+    let mut uploads = state.uploads.lock();
+    let mut resumed = 0;
+    for (path, mut pending) in cloud::pending(&PathBuf::from(dir)) {
+        if uploads.iter().any(|u| u.dir == path) || recording_dir.as_ref() == Some(&path) {
+            continue;
+        }
+        // Una grabación que quedó sin cerrar (la app se cerró a mitad): se sube lo que haya.
+        if pending.duration_ms.is_none() {
+            pending.duration_ms = Some(0);
+        }
+        pending.failed = None;
+        if let Ok(upload) = Upload::spawn(path, cloud.clone(), pending) {
+            uploads.push(upload);
+            resumed += 1;
+        }
+    }
+    resumed
 }
 
 #[derive(Serialize)]
@@ -246,6 +358,9 @@ struct Status {
     screen_frames: u64,
     mic_peak: f32,
     camera_active: bool,
+    /// Subida más reciente y cuántas siguen en curso.
+    cloud: Option<CloudProgress>,
+    uploads_active: usize,
 }
 
 // `async`: corre fuera del hilo de la ventana, que no debe esperar el candado
@@ -253,6 +368,7 @@ struct Status {
 #[tauri::command(async)]
 fn get_status(state: State<AppState>) -> Status {
     let session = state.session.lock();
+    let uploads = state.uploads.lock();
     Status {
         recording: session.is_some(),
         paused: session.as_ref().map(|s| s.is_paused()).unwrap_or(false),
@@ -269,6 +385,11 @@ fn get_status(state: State<AppState>) -> Status {
             .cam_shared
             .active
             .load(std::sync::atomic::Ordering::Relaxed),
+        cloud: uploads.first().map(|u| u.progress()),
+        uploads_active: uploads
+            .iter()
+            .filter(|u| !matches!(u.progress().state.as_str(), "done" | "failed"))
+            .count(),
     }
 }
 
@@ -380,6 +501,15 @@ fn selftest(args: &[String]) -> i32 {
         quality: "media".into(),
         max_height: Some(1080),
         cursor: true,
+        keep_parts: false,
+    };
+    let cloud = match (std::env::var("DUALREC_API_URL"), std::env::var("DUALREC_TOKEN")) {
+        (Ok(api_url), Ok(token)) => Some(CloudConfig { api_url, token }),
+        _ => None,
+    };
+    let opts = RecOptions {
+        keep_parts: cloud.is_some(),
+        ..opts
     };
     let session = match Session::start(sources, &opts) {
         Ok(s) => s,
@@ -389,6 +519,10 @@ fn selftest(args: &[String]) -> i32 {
         }
     };
     // Con una pausa en el medio, para probar que el reloj la descuenta.
+    let upload = cloud.and_then(|cfg| {
+        let initial = upload_state(&session.manifest, &cfg, Some("Autoprueba".into()));
+        Upload::spawn(session.dir.clone(), cfg, initial).ok()
+    });
     let third = std::time::Duration::from_millis(secs * 1000 / 3);
     std::thread::sleep(third);
     session.pause();
@@ -397,7 +531,60 @@ fn selftest(args: &[String]) -> i32 {
     std::thread::sleep(third * 2);
     let manifest = session.stop();
     println!("{}", serde_json::to_string_pretty(&manifest).unwrap());
-    i32::from(manifest.status != "ready")
+    let mut cloud_ok = true;
+    if let Some(upload) = upload {
+        upload.finish(manifest.duration_ms);
+        // Se espera a que termine la subida (o a que falle de forma definitiva).
+        let wait: u64 = std::env::var("DUALREC_UPLOAD_WAIT").ok().and_then(|s| s.parse().ok()).unwrap_or(180);
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(wait);
+        let mut last = String::new();
+        loop {
+            let p = upload.progress();
+            let line = format!("nube: {} {}/{} bytes {}", p.state, p.uploaded_bytes, p.total_bytes, p.error.clone().unwrap_or_default());
+            if line != last {
+                println!("{line}");
+                last = line;
+            }
+            if p.state == "done" || p.state == "failed" || std::time::Instant::now() > deadline {
+                cloud_ok = p.state == "done";
+                println!("link: {}", p.share_url.unwrap_or_default());
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(300));
+        }
+    }
+    i32::from(manifest.status != "ready" || !cloud_ok)
+}
+
+/// Retoma por consola las subidas pendientes de una carpeta:
+/// `dualrec --resume-uploads <carpeta>` (usa DUALREC_API_URL y DUALREC_TOKEN).
+fn resume_cli(dir: Option<&String>) -> i32 {
+    let (Ok(api_url), Ok(token)) = (std::env::var("DUALREC_API_URL"), std::env::var("DUALREC_TOKEN")) else {
+        println!("Faltan DUALREC_API_URL y DUALREC_TOKEN.");
+        return 2;
+    };
+    let cfg = CloudConfig { api_url, token };
+    let dir = dir.map(PathBuf::from).unwrap_or_else(default_dir);
+    let mut failed = 0;
+    for (path, mut pending) in cloud::pending(&dir) {
+        println!("retomando {} ({} partes ya subidas)", path.display(), pending.tracks.iter().map(|t| t.parts.len()).sum::<usize>());
+        if pending.duration_ms.is_none() {
+            pending.duration_ms = Some(0);
+        }
+        pending.failed = None;
+        let Ok(upload) = Upload::spawn(path, cfg.clone(), pending) else { continue };
+        loop {
+            let p = upload.progress();
+            if p.state == "done" || p.state == "failed" {
+                println!("nube: {} {}/{} bytes {}", p.state, p.uploaded_bytes, p.total_bytes, p.error.unwrap_or_default());
+                println!("link: {}", p.share_url.unwrap_or_default());
+                failed += i32::from(p.state != "done");
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(300));
+        }
+    }
+    failed
 }
 
 fn main() {
@@ -405,6 +592,9 @@ fn main() {
     if args.iter().any(|a| a == "--caminfo") {
         camera::print_diagnostics();
         return;
+    }
+    if let Some(i) = args.iter().position(|a| a == "--resume-uploads") {
+        std::process::exit(resume_cli(args.get(i + 1)));
     }
     if let Some(i) = args.iter().position(|a| a == "--selftest") {
         std::process::exit(selftest(&args[i + 1..]));
@@ -421,6 +611,7 @@ fn main() {
             camera: Mutex::new(None),
             mic: Mutex::new(None),
             session: Mutex::new(None),
+            uploads: Mutex::new(Vec::new()),
             preview_port,
         })
         .setup(|app| {
@@ -450,7 +641,8 @@ fn main() {
                     let state = window.state::<AppState>();
                     let session = state.session.lock().take();
                     if let Some(s) = session {
-                        s.stop();
+                        // Lo que falte subir se retoma al volver a abrir la app.
+                        finish_session(&state, s);
                     }
                     window.app_handle().exit(0);
                 }
@@ -469,6 +661,10 @@ fn main() {
             get_status,
             list_recordings,
             open_folder,
+            copy_text,
+            cloud_check,
+            cloud_defaults,
+            resume_uploads,
             set_bubble,
             set_capture_hidden,
         ])
