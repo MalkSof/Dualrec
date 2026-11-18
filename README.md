@@ -1,0 +1,152 @@
+# Dualrec
+
+Grabador estilo Loom que guarda **pantalla, cámara, micrófono y audio del sistema en pistas separadas**, listas para editar. Es la primera pieza de un producto más grande: subir las grabaciones a la nube y consultarlas con IA (ver [Hoja de ruta](#hoja-de-ruta)).
+
+> **Estado: etapa 1 — grabador local (Windows).** La app graba y deja una carpeta por grabación con `screen.mp4`, `camera.mp4`, `mic.m4a` y `system.m4a` sincronizados. La nube, el procesamiento y la IA son las etapas siguientes.
+
+## Qué hace hoy
+
+- Elegís **pantalla o ventana**, **cámara**, **micrófono** y si querés el **audio del sistema**.
+- **Burbuja de cámara flotante**, siempre visible, que se arrastra y cambia de tamaño con doble clic.
+- **Grabar, pausar y cortar**, también con atajos globales: `Ctrl+Alt+R` (grabar / cortar) y `Ctrl+Alt+P` (pausar / reanudar).
+- Dualrec y la burbuja **no salen en `screen.mp4`** (se excluyen de la captura; se puede desactivar).
+- **H.264 por hardware** cuando hay GPU (NVENC, Quick Sync o AMF) y x264 por CPU si no.
+- Cada grabación queda en `Videos\Dualrec\<fecha_hora>\` junto a un `session.json` con el detalle de cada pista.
+
+```
+Videos/Dualrec/2026-11-18_18-05-48/
+├── screen.mp4     H.264, resolución de la pantalla (o limitada a 1080p)
+├── camera.mp4     H.264, resolución de la cámara
+├── mic.m4a        AAC, micrófono
+├── system.m4a     AAC, lo que suena por los parlantes
+└── session.json   manifiesto: pistas, duración, offsets, tamaños
+```
+
+## Estructura del monorepo
+
+```
+apps/
+  desktop/        App de escritorio (Tauri 2 + Vue 3 + TypeScript)
+    src/          Interfaz: ventana principal y burbuja
+    src-tauri/    Motor de captura en Rust
+  api/            (etapa 2) API en FastAPI
+  web/            (etapa 2) SPA en Vue 3: biblioteca, reproductor, chat
+scripts/
+  fetch-ffmpeg.ps1   Baja el FFmpeg que se empaqueta con la app
+  make-icon.ps1      Genera el ícono fuente
+```
+
+### Módulos del motor (`apps/desktop/src-tauri/src`)
+
+| Archivo | Responsabilidad |
+| --- | --- |
+| `clock.rs` | Reloj monotónico común a todas las pistas (con pausas) |
+| `screen.rs` | Captura de pantalla o ventana (Windows Graphics Capture) |
+| `camera.rs` | Cámara y vista previa |
+| `audio.rs` | Micrófono y audio del sistema (WASAPI loopback) |
+| `ffmpeg.rs` | Sidecar de FFmpeg: detección de encoder y argumentos |
+| `recorder.rs` | Orquesta una grabación: pistas, sincronía, manifiesto |
+| `preview.rs` | Servidor local MJPEG para la burbuja |
+| `main.rs` | Comandos de Tauri, atajos globales y autoprueba |
+
+### Crates y por qué
+
+| Crate | Para qué |
+| --- | --- |
+| `tauri` 2 | Ventanas nativas livianas con la interfaz en Vue |
+| `windows-capture` | Windows Graphics Capture: captura por GPU de pantallas y ventanas |
+| `nokhwa` | Cámara multiplataforma (Media Foundation en Windows) |
+| `cpal` | Micrófono y loopback de WASAPI para el audio del sistema |
+| `image` | JPEG de la vista previa de la cámara |
+| `parking_lot`, `crossbeam-channel` | Estado compartido y colas entre hilos de captura |
+| `serde`, `serde_json` | Manifiesto `session.json` y mensajes con la interfaz |
+| `chrono`, `dirs`, `anyhow` | Nombres de carpeta, rutas del usuario y errores |
+| `tauri-plugin-global-shortcut`, `tauri-plugin-dialog` | Atajos globales y selector de carpeta |
+
+## Cómo se sincronizan las pistas
+
+Todas las pistas comparten **un reloj monotónico** que arranca en `t0`, cuando todas las fuentes ya están entregando datos.
+
+- **Video**: se escribe a ritmo constante. El cuadro `k` corresponde al instante `k / fps`; si la fuente no entregó un cuadro nuevo (una pantalla quieta no genera cuadros), se repite el último.
+- **Audio**: se cuentan muestras contra el mismo reloj. Los huecos se rellenan con silencio (el loopback de WASAPI no entrega nada cuando no suena nada) y nunca se adelanta al reloj.
+- **Pausa**: congela el reloj, así que todas las pistas saltan el mismo tramo.
+- **Corte**: primero se congela el reloj y después se cierran las pistas, por lo que todas terminan en el mismo instante.
+
+Resultado: todas las pistas empiezan en `t0` (`offset_ms: 0` en el manifiesto) y duran lo mismo con una diferencia menor a un cuadro. Se alinean en el editor poniéndolas todas al inicio de la línea de tiempo.
+
+**Si la app se cierra a mitad de grabación** no se pierde lo grabado: cada pista se escribe como MP4 fragmentado (`*.part.mp4` / `*.part.m4a`), que es reproducible aunque quede incompleto. Al cortar normalmente se convierte a MP4 clásico sin recodificar.
+
+## Compilar y correr
+
+### Windows
+
+Requisitos:
+
+1. **Node.js 20+**.
+2. **Rust** (rustup). Sirve cualquiera de las dos toolchains:
+   - MSVC (recomendada por Tauri): instalar *Visual Studio Build Tools* con "Desarrollo para el escritorio con C++".
+   - GNU (sin Visual Studio): `rustup default stable-x86_64-pc-windows-gnu` y un MinGW-w64 en el `PATH`, por ejemplo `winget install BrechtSanders.WinLibs.POSIX.UCRT`.
+3. **WebView2** (ya viene con Windows 11).
+4. **FFmpeg como sidecar**:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/fetch-ffmpeg.ps1
+```
+
+Después:
+
+```powershell
+cd apps/desktop
+npm install
+npm run tauri dev      # desarrollo, con recarga en caliente
+npm run tauri build    # instalador en src-tauri/target/release/bundle/nsis/
+```
+
+### macOS
+
+Todavía **no está soportado**. Tauri, `nokhwa` y `cpal` ya son multiplataforma, pero falta el backend de captura de pantalla y de audio del sistema con ScreenCaptureKit y el manejo de permisos de macOS. Es el siguiente paso de la etapa 1 y entra detrás de las mismas interfaces (`screen.rs`, `audio.rs`).
+
+## Tests y autoprueba
+
+```powershell
+cd apps/desktop/src-tauri
+cargo test
+```
+
+Los tests cubren el reloj y las pausas, la cuenta de cuadros y muestras, el relleno de silencio, los argumentos de FFmpeg, el ajuste de cuadros cuando cambia el tamaño de la ventana y el manifiesto.
+
+Para probar el motor completo sin interfaz (graba la pantalla principal, cámara, micrófono y audio del sistema, con una pausa en el medio, e imprime el manifiesto):
+
+```powershell
+cargo run -- --selftest 10 C:\ruta\de\salida
+cargo run -- --selftest 10 C:\ruta\de\salida --fake-camera   # cámara sintética
+cargo run -- --caminfo                                        # formatos de la cámara
+```
+
+Variables útiles en desarrollo: `DUALREC_ENCODER=x264|nvenc|qsv|amf` fuerza el encoder, `DUALREC_FAKE_CAMERA=1` usa una cámara sintética y `DUALREC_NO_PROTECT=1` deja las ventanas de Dualrec visibles para capturas de pantalla.
+
+## Permisos y problemas frecuentes
+
+- **Cámara o micrófono no abren**: revisar *Configuración → Privacidad y seguridad → Cámara / Micrófono* y que "Permitir que las aplicaciones de escritorio accedan" esté activado.
+- **"La cámara no está entregando imagen"**: otra app la está usando (OBS, Teams, el navegador), la tapa de la notebook está cerrada o el obturador de privacidad está activado.
+- **El micrófono graba silencio**: mirar el medidor de nivel debajo del selector; si no se mueve, elegir otro micrófono.
+- **Ventana minimizada**: Windows no entrega imagen de ventanas minimizadas; hay que restaurarla antes de grabar.
+
+## Diferencias con la especificación original
+
+- **Captura de pantalla**: se usa `windows-capture` directamente en lugar de `scap`. En Windows `scap` es una capa sobre ese mismo crate, y usarlo directo da control del ritmo de cuadros, del borde amarillo y del cursor. El backend de macOS se suma detrás del mismo módulo.
+- **Fragmentos en disco**: cada pista se escribe como MP4 fragmentado desde el primer segundo (seguro ante cierres). El troceado en partes de 8 MB para la subida multipart es de la etapa 2.
+
+## Hoja de ruta
+
+| Etapa | Entrega | Estado |
+| --- | --- | --- |
+| 1. Grabador local | App que graba pantalla, cámara, micrófono y audio del sistema en archivos separados | Windows listo · macOS pendiente |
+| 2. Nube | API FastAPI, subida multipart reanudable, link para compartir | Pendiente |
+| 3. Procesamiento | Video compuesto, transcripción, resumen y capítulos | Pendiente |
+| 4. Chat con IA | Segmentos con embeddings, chat con citas al minuto | Pendiente |
+| 5. MCP + visual | Servidor MCP e indexado de lo que se ve en pantalla | Pendiente |
+
+## Licencias de terceros
+
+Dualrec ejecuta **FFmpeg** como un programa aparte (sidecar). El build que baja `scripts/fetch-ffmpeg.ps1` está licenciado bajo **GPL v3**; su código fuente y licencia están en <https://ffmpeg.org> y <https://www.gyan.dev/ffmpeg/builds/>. Si se distribuye el instalador, hay que acompañarlo con ese aviso.

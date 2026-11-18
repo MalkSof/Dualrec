@@ -1,0 +1,20 @@
+# Node
+node_modules/
+dist/
+
+# Rust / Tauri
+target/
+apps/desktop/src-tauri/gen/
+
+# FFmpeg sidecar: se baja con scripts/fetch-ffmpeg.ps1 (pesa más de 100 MB)
+apps/desktop/src-tauri/binaries/*
+!apps/desktop/src-tauri/binaries/.gitkeep
+
+# Entorno
+.env
+.env.*
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
