@@ -1,5 +1,6 @@
 # Publica la landing (apps/landing) en GitHub Pages.
 # Requiere activar Pages en Settings → Pages → Source: "GitHub Actions".
+# El dominio (dualrec.malkadigital.com) se carga en esa misma pantalla, en "Custom domain".
 name: Landing
 
 on:
