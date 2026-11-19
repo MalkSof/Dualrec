@@ -1,0 +1,40 @@
+# Compila el instalador de Windows y lo publica como versión en GitHub.
+# Se dispara al subir una etiqueta vX.Y.Z (por ejemplo: git tag v0.1.0 && git push origin v0.1.0).
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/desktop/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/desktop/src-tauri
+      - name: FFmpeg (sidecar)
+        shell: pwsh
+        run: ./scripts/fetch-ffmpeg.ps1
+      - name: Compilar
+        working-directory: apps/desktop
+        run: |
+          npm ci
+          npm run tauri build
+      - name: Publicar
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" apps/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe \
+            --title "Dualrec ${GITHUB_REF_NAME#v}" --notes-file .github/release-notes.md
