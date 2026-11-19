@@ -1,4 +1,21 @@
-# Dualrec
+<p align="center">
+  <img src="apps/landing/assets/logo.svg" width="72" alt="" />
+</p>
+<h1 align="center">Dualrec</h1>
+<p align="center">
+  <b>Grabá tu pantalla y tu cámara por separado.</b><br />
+  Pantalla, cámara, micrófono y audio del sistema en cuatro archivos sincronizados. Gratis para Windows.
+</p>
+<p align="center">
+  <a href="https://github.com/MalkSof/Dualrec/releases/latest"><b>Descargar para Windows</b></a>
+  ·
+  <a href="https://malksof.github.io/Dualrec/">Sitio web</a>
+</p>
+<p align="center">
+  <img src="apps/landing/assets/app.png" width="320" alt="Dualrec después de grabar: lista los cuatro archivos de la grabación" />
+  &nbsp;
+  <img src="apps/landing/assets/grabando.png" width="320" alt="Dualrec grabando, con el tiempo y los botones de pausar y cortar" />
+</p>
 
 Grabador estilo Loom que guarda **pantalla, cámara, micrófono y audio del sistema en pistas separadas**, listas para editar. Es la primera pieza de un producto más grande: subir las grabaciones a la nube y consultarlas con IA (ver [Hoja de ruta](#hoja-de-ruta)).
 
@@ -59,6 +76,7 @@ apps/
     src-tauri/    Motor de captura en Rust
   api/            API en FastAPI: videos, subida multipart, link para compartir
   web/            SPA en Vue 3: reproductor y biblioteca
+  landing/        Sitio de presentación (HTML estático, se publica en GitHub Pages)
 infra/
   aws/            Plantillas de CloudFormation y script de despliegue
 scripts/

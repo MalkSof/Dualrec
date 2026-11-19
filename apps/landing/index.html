@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dualrec — Grabar pantalla y cámara por separado, gratis para Windows</title>
+    <meta name="description" content="Grabador de pantalla y cámara para Windows que guarda pantalla, cámara, micrófono y audio del sistema en archivos separados y sincronizados, listos para editar. Gratis y sin registro." />
+    <meta name="theme-color" content="#0b0d12" />
+    <link rel="canonical" href="https://malksof.github.io/Dualrec/" />
+    <meta property="og:title" content="Dualrec — Grabar pantalla y cámara por separado" />
+    <meta property="og:description" content="Una grabación, cuatro archivos sincronizados: pantalla, cámara, micrófono y audio del sistema. Gratis para Windows." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:url" content="https://malksof.github.io/Dualrec/" />
+    <meta property="og:image" content="https://malksof.github.io/Dualrec/assets/app.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Datos estructurados: le dicen a Google qué es Dualrec y habilitan las preguntas frecuentes en los resultados. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dualrec",
+        "description": "Grabador de pantalla y cámara que guarda pantalla, cámara, micrófono y audio del sistema en archivos separados y sincronizados.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Windows 10, Windows 11",
+        "softwareVersion": "0.1.0",
+        "inLanguage": "es",
+        "url": "https://malksof.github.io/Dualrec/",
+        "downloadUrl": "https://github.com/MalkSof/Dualrec/releases/latest",
+        "screenshot": "https://malksof.github.io/Dualrec/assets/app.png",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@type": "Organization", "name": "MalkaDigital" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Cómo grabo la pantalla y la cámara por separado?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Abrí Dualrec, elegí la pantalla o ventana y la cámara, y apretá Grabar. Al cortar quedan dos videos distintos, screen.mp4 y camera.mp4, además del audio del micrófono y del sistema en archivos aparte." }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Dualrec es gratis?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Sí. Grabar en tu computadora es gratis, sin registro y sin marca de agua." }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Las pistas quedan sincronizadas?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Sí. Todas las pistas comparten el mismo reloj: arrancan en el mismo instante y duran lo mismo, así que en el editor se alinean poniéndolas al inicio de la línea de tiempo." }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Funciona en Mac?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Por ahora Dualrec funciona en Windows 10 y 11. La versión para macOS está planeada." }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Necesito internet para grabar?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Dualrec graba sin conexión y los archivos quedan en tu computadora." }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Con qué programas puedo editar las grabaciones?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Con cualquier editor de video. Los videos son MP4 con H.264 y los audios M4A con AAC, formatos que abren DaVinci Resolve, Premiere, CapCut y el resto de los editores habituales." }
+          }
+        ]
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+    <style>
+      :root {
+        --bg: #0b0d12;
+        --card: #151922;
+        --card-2: #1b202b;
+        --line: #262c3a;
+        --text: #eef0f6;
+        --muted: #9aa2b5;
+        --accent: #8b7cff;
+        --accent-2: #4da3ff;
+        --rec: #ff3d57;
+        --rec-2: #ff6b81;
+        --ok: #3ddc97;
+        color-scheme: dark;
+        font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(1100px 520px at 10% -8%, rgba(139, 124, 255, 0.2), transparent 70%),
+          radial-gradient(900px 480px at 100% 0%, rgba(77, 163, 255, 0.13), transparent 70%), var(--bg);
+        background-repeat: no-repeat;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 6px;
+      }
+
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      /* ---------- Navegación ---------- */
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        padding: 20px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 19px;
+        font-weight: 650;
+        text-decoration: none;
+        margin-right: auto;
+      }
+
+      nav a.link {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 15px;
+      }
+
+      nav a.link:hover {
+        color: var(--text);
+      }
+
+      /* ---------- Botones ---------- */
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 22px;
+        border-radius: 14px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.07);
+      }
+
+      .btn.primary {
+        color: #fff;
+        background: linear-gradient(135deg, var(--rec-2), var(--rec));
+        box-shadow: 0 10px 30px rgba(255, 61, 87, 0.3);
+      }
+
+      .btn.ghost {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .btn svg {
+        width: 19px;
+        height: 19px;
+      }
+
+      /* ---------- Hero ---------- */
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 48px;
+        align-items: center;
+        padding: 44px 0 80px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        font-size: 13.5px;
+        color: var(--muted);
+      }
+
+      .eyebrow i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ok);
+      }
+
+      h1 {
+        margin-top: 18px;
+        font-size: clamp(36px, 5.2vw, 60px);
+        line-height: 1.06;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      h1 em {
+        font-style: normal;
+        background: linear-gradient(120deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .lead {
+        margin-top: 20px;
+        max-width: 34em;
+        font-size: 19px;
+        color: var(--muted);
+      }
+
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .fine {
+        margin-top: 14px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .shot {
+        position: relative;
+        justify-self: center;
+        max-width: 420px;
+      }
+
+      .shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        box-shadow: 0 40px 90px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03);
+      }
+
+      .shot::before {
+        content: "";
+        position: absolute;
+        inset: 8% -8% -6% -8%;
+        z-index: -1;
+        border-radius: 50%;
+        background: radial-gradient(closest-side, rgba(139, 124, 255, 0.35), transparent);
+        filter: blur(30px);
+      }
+
+      /* ---------- Secciones ---------- */
+
+      section {
+        padding: 72px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      h2 {
+        font-size: clamp(27px, 3.4vw, 38px);
+        line-height: 1.15;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .sub {
+        margin-top: 12px;
+        max-width: 40em;
+        color: var(--muted);
+      }
+
+      /* Pistas */
+
+      .tracks {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 36px;
+      }
+
+      .track {
+        padding: 20px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: var(--card);
+      }
+
+      .track .ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      }
+
+      .track .ico svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .track code {
+        display: block;
+        margin-top: 16px;
+        font-family: "Cascadia Mono", Consolas, ui-monospace, monospace;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .track p {
+        margin-top: 6px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .timeline {
+        margin-top: 22px;
+        padding: 18px 20px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: var(--card);
+      }
+
+      .timeline p {
+        font-size: 14.5px;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+
+      .lane {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 7px;
+      }
+
+      .lane span {
+        height: 16px;
+        border-radius: 5px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        opacity: 0.85;
+      }
+
+      .lane:nth-child(3) span {
+        background: linear-gradient(90deg, var(--rec-2), var(--rec));
+      }
+
+      .lane:nth-child(n + 4) span {
+        height: 10px;
+        background: repeating-linear-gradient(90deg, #5d6b8f 0 3px, #2b3246 3px 6px);
+      }
+
+      /* Funciones */
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 36px;
+      }
+
+      .feature {
+        padding: 22px;
+        border-radius: 16px;
+        border: 1px solid var(--line);
+        background: var(--card);
+      }
+
+      .feature h3 {
+        font-size: 17.5px;
+        font-weight: 650;
+      }
+
+      .feature p {
+        margin-top: 8px;
+        font-size: 15.5px;
+        color: var(--muted);
+      }
+
+      kbd {
+        font: inherit;
+        font-size: 13px;
+        padding: 1px 6px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: var(--card-2);
+        color: var(--text);
+      }
+
+      /* Pasos */
+
+      .steps {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 48px;
+        align-items: center;
+        margin-top: 36px;
+      }
+
+      .steps ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        counter-reset: paso;
+      }
+
+      .steps li {
+        position: relative;
+        padding: 0 0 26px 54px;
+        counter-increment: paso;
+      }
+
+      .steps li::before {
+        content: counter(paso);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+        border: 1px solid var(--line);
+        background: var(--card);
+      }
+
+      .steps li b {
+        display: block;
+        font-size: 17.5px;
+      }
+
+      .steps li span {
+        color: var(--muted);
+        font-size: 15.5px;
+      }
+
+      .steps img {
+        display: block;
+        width: 100%;
+        max-width: 380px;
+        height: auto;
+        margin: 0 auto;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Lo que viene */
+
+      .next {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 36px;
+      }
+
+      .next div {
+        padding: 22px;
+        border-radius: 16px;
+        border: 1px dashed #343c50;
+      }
+
+      .next small {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #b9c6ff;
+        background: rgba(139, 124, 255, 0.16);
+      }
+
+      .next h3 {
+        margin-top: 12px;
+        font-size: 17.5px;
+      }
+
+      .next p {
+        margin-top: 8px;
+        font-size: 15.5px;
+        color: var(--muted);
+      }
+
+      /* Preguntas frecuentes */
+
+      .faq {
+        max-width: 780px;
+        margin-top: 30px;
+      }
+
+      .faq details {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .faq summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 18px 34px 18px 0;
+        position: relative;
+        font-size: 17.5px;
+        font-weight: 600;
+      }
+
+      .faq summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .faq summary::after {
+        content: "";
+        position: absolute;
+        right: 6px;
+        top: 24px;
+        width: 9px;
+        height: 9px;
+        border-right: 2px solid var(--muted);
+        border-bottom: 2px solid var(--muted);
+        transform: rotate(45deg);
+        transition: transform 0.2s;
+      }
+
+      .faq details[open] summary::after {
+        transform: rotate(-135deg);
+        top: 28px;
+      }
+
+      .faq p {
+        padding: 0 0 20px;
+        color: var(--muted);
+      }
+
+      .faq code,
+      .steps code {
+        font-family: "Cascadia Mono", Consolas, ui-monospace, monospace;
+        font-size: 0.9em;
+        color: var(--text);
+      }
+
+      /* Descarga */
+
+      .download {
+        text-align: center;
+      }
+
+      .download .sub {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .download .cta {
+        justify-content: center;
+      }
+
+      footer {
+        padding: 30px 0 48px;
+        border-top: 1px solid var(--line);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 22px;
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      footer span {
+        margin-right: auto;
+      }
+
+      footer a {
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        color: var(--text);
+      }
+
+      @media (max-width: 900px) {
+        .hero,
+        .steps {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .hero {
+          padding-top: 24px;
+        }
+        .tracks {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .grid,
+        .next {
+          grid-template-columns: 1fr;
+        }
+        nav a.link {
+          display: none;
+        }
+        section {
+          padding: 56px 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .wrap {
+          padding: 0 16px;
+        }
+        .tracks {
+          grid-template-columns: 1fr;
+        }
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .btn {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="#" aria-label="Dualrec">
+          <img src="assets/logo.svg" alt="" width="30" height="30" />
+          Dualrec
+        </a>
+        <a class="link" href="#pistas">Pistas</a>
+        <a class="link" href="#funciones">Funciones</a>
+        <a class="link" href="#proximamente">Lo que viene</a>
+        <a class="link" href="#preguntas">Preguntas</a>
+        <a class="link" href="https://github.com/MalkSof/Dualrec">GitHub</a>
+      </nav>
+
+      <header class="hero">
+        <div>
+          <span class="eyebrow"><i></i> Gratis para Windows 10 y 11</span>
+          <h1>Grabá tu pantalla y tu cámara <em>por separado</em>.</h1>
+          <p class="lead">
+            Dualrec graba pantalla, cámara, micrófono y audio del sistema en cuatro archivos
+            sincronizados. Editás cada uno como quieras, sin la cámara pegada encima del video.
+          </p>
+          <div class="cta">
+            <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+              Descargar para Windows
+            </a>
+            <a class="btn ghost" href="https://github.com/MalkSof/Dualrec">Ver el código</a>
+          </div>
+          <p class="fine">Instalador de 30 MB · sin cuenta ni registro · las grabaciones quedan en tu computadora</p>
+        </div>
+        <div class="shot">
+          <img src="assets/app.png" width="568" height="997" alt="Dualrec después de grabar: lista los archivos screen.mp4, camera.mp4, mic.m4a y system.m4a de la grabación" />
+        </div>
+      </header>
+
+      <section id="pistas">
+        <h2>Una grabación, cuatro archivos</h2>
+        <p class="sub">
+          Cada fuente se guarda en su propio archivo, en una carpeta por grabación. Todos arrancan en
+          el mismo instante y duran lo mismo: en el editor los ponés al inicio de la línea de tiempo
+          y ya están alineados.
+        </p>
+        <div class="tracks">
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2.2" /><path d="M8.5 20.5h7M12 17v3.5" /></svg></div>
+            <code>screen.mp4</code>
+            <p>Una pantalla entera o una sola ventana, hasta 60 cuadros por segundo.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13.5" height="12" rx="2.4" /><path d="m16 10.5 5.5-3v9l-5.5-3" /></svg></div>
+            <code>camera.mp4</code>
+            <p>Tu cámara a resolución completa, para ubicarla y recortarla donde quieras.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11.5" rx="3" /><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5" /></svg></div>
+            <code>mic.m4a</code>
+            <p>Tu voz sola, para limpiarla o subirle el volumen sin tocar el resto.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z" /><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg></div>
+            <code>system.m4a</code>
+            <p>Lo que suena en la computadora, separado del micrófono.</p>
+          </div>
+        </div>
+        <div class="timeline" aria-hidden="true">
+          <p>Así quedan en tu editor: mismas marcas de inicio y de fin.</p>
+          <div class="lane">screen.mp4 <span></span></div>
+          <div class="lane">camera.mp4 <span></span></div>
+          <div class="lane">mic.m4a <span></span></div>
+          <div class="lane">system.m4a <span></span></div>
+        </div>
+      </section>
+
+      <section id="funciones">
+        <h2>Hecho para grabar sin pensar en la grabación</h2>
+        <div class="grid">
+          <div class="feature">
+            <h3>Burbuja de cámara flotante</h3>
+            <p>Te ves mientras grabás, la movés a donde no moleste y cambia de tamaño con doble clic.</p>
+          </div>
+          <div class="feature">
+            <h3>La app no sale en el video</h3>
+            <p>Dualrec y la burbuja quedan fuera de la grabación de pantalla. Se puede desactivar.</p>
+          </div>
+          <div class="feature">
+            <h3>Atajos desde cualquier programa</h3>
+            <p><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> graba o corta y <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>P</kbd> pausa, sin volver a la ventana de Dualrec.</p>
+          </div>
+          <div class="feature">
+            <h3>Pausa que no desincroniza</h3>
+            <p>Al pausar, las cuatro pistas saltan el mismo tramo. Siguen alineadas al reanudar.</p>
+          </div>
+          <div class="feature">
+            <h3>Usa tu placa de video</h3>
+            <p>Codifica en H.264 por hardware con NVIDIA, Intel o AMD, y por procesador si no hay.</p>
+          </div>
+          <div class="feature">
+            <h3>Si se cierra, no perdés lo grabado</h3>
+            <p>Cada pista se escribe en disco desde el primer segundo y se puede reproducir aunque la app se cierre a la mitad.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Cómo se usa</h2>
+        <div class="steps">
+          <ol>
+            <li><b>Elegí qué grabar</b><span>Pantalla o ventana, cámara, micrófono y audio del sistema. Cada uno se prende o se apaga por separado.</span></li>
+            <li><b>Apretá Grabar</b><span>O usá el atajo. Podés pausar las veces que quieras.</span></li>
+            <li><b>Cortá y abrí la carpeta</b><span>Los archivos quedan en <code>Videos\Dualrec</code>, una carpeta por grabación, listos para tu editor.</span></li>
+          </ol>
+          <img src="assets/grabando.png" width="568" height="997" loading="lazy" alt="Dualrec grabando: indicador REC con el tiempo y botones de pausar y cortar" />
+        </div>
+      </section>
+
+      <section id="proximamente">
+        <h2>Lo que viene</h2>
+        <p class="sub">Dualrec empieza como grabador. El plan es que cada video se pueda compartir y consultar.</p>
+        <div class="next">
+          <div>
+            <small>En desarrollo</small>
+            <h3>Link para compartir</h3>
+            <p>La grabación se sube mientras grabás y al cortar tenés un link con reproductor web, con la cámara en una burbuja que se puede ocultar.</p>
+          </div>
+          <div>
+            <small>Planeado</small>
+            <h3>Transcripción y resumen</h3>
+            <p>Cada video con su texto, un resumen y capítulos generados automáticamente.</p>
+          </div>
+          <div>
+            <small>Planeado</small>
+            <h3>Preguntale a tus videos</h3>
+            <p>Buscá en lenguaje natural y saltá al minuto exacto donde lo explicaste.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="preguntas">
+        <h2>Preguntas frecuentes</h2>
+        <div class="faq">
+          <details open>
+            <summary>¿Cómo grabo la pantalla y la cámara por separado?</summary>
+            <p>Abrí Dualrec, elegí la pantalla o ventana y la cámara, y apretá Grabar. Al cortar quedan dos videos distintos, <code>screen.mp4</code> y <code>camera.mp4</code>, además del audio del micrófono y del sistema en archivos aparte.</p>
+          </details>
+          <details>
+            <summary>¿Dualrec es gratis?</summary>
+            <p>Sí. Grabar en tu computadora es gratis, sin registro y sin marca de agua.</p>
+          </details>
+          <details>
+            <summary>¿Las pistas quedan sincronizadas?</summary>
+            <p>Sí. Todas las pistas comparten el mismo reloj: arrancan en el mismo instante y duran lo mismo, así que en el editor se alinean poniéndolas al inicio de la línea de tiempo.</p>
+          </details>
+          <details>
+            <summary>¿En qué se diferencia de otros grabadores de pantalla?</summary>
+            <p>La mayoría entrega un solo video con la cámara ya pegada encima de la pantalla. Dualrec entrega cada fuente en su archivo, para que decidas en la edición dónde va la cámara, cuándo se ve y cómo suena cada audio.</p>
+          </details>
+          <details>
+            <summary>¿Funciona en Mac?</summary>
+            <p>Por ahora Dualrec funciona en Windows 10 y 11. La versión para macOS está planeada.</p>
+          </details>
+          <details>
+            <summary>¿Necesito internet para grabar?</summary>
+            <p>No. Dualrec graba sin conexión y los archivos quedan en tu computadora.</p>
+          </details>
+          <details>
+            <summary>¿Con qué programas puedo editar las grabaciones?</summary>
+            <p>Con cualquier editor de video. Los videos son MP4 con H.264 y los audios M4A con AAC, formatos que abren DaVinci Resolve, Premiere, CapCut y el resto de los editores habituales.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="download">
+        <h2>Probalo ahora</h2>
+        <p class="sub">Gratis, sin registro. Para Windows 10 y 11.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+            Descargar para Windows
+          </a>
+        </div>
+        <p class="fine">Windows puede avisar que el instalador no está firmado: elegí “Más información” y después “Ejecutar de todas formas”.</p>
+      </section>
+
+      <footer>
+        <span>Dualrec · hecho por MalkaDigital</span>
+        <a href="https://github.com/MalkSof/Dualrec">Código en GitHub</a>
+        <a href="https://github.com/MalkSof/Dualrec/releases">Versiones</a>
+      </footer>
+    </div>
+  </body>
+</html>
