@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://github.com/MalkSof/Dualrec/releases/latest"><b>Descargar para Windows</b></a>
   ·
-  <a href="https://malksof.github.io/Dualrec/">Sitio web</a>
+  <a href="https://dualrec.malkadigital.com/">Sitio web</a>
 </p>
 <p align="center">
   <img src="apps/landing/assets/app.png" width="320" alt="Dualrec después de grabar: lista los cuatro archivos de la grabación" />
