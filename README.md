@@ -7,7 +7,7 @@
   Pantalla, cámara, micrófono y audio del sistema en cuatro archivos sincronizados. Gratis para Windows.
 </p>
 <p align="center">
-  <a href="https://github.com/MalkSof/Dualrec/releases/latest"><b>Descargar para Windows</b></a>
+  <a href="https://github.com/MalkSof/Dualrec/releases/download/v0.1.0/Dualrec_0.1.0_x64-setup.exe"><b>Descargar para Windows</b></a>
   ·
   <a href="https://dualrec.malkadigital.com/">Sitio web</a>
 </p>
