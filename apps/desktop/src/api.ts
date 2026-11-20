@@ -25,6 +25,7 @@ export interface Devices {
   default_mic: string | null;
   system_output: string | null;
   preview_url: string;
+  screen_preview_url: string;
   default_dir: string;
   ffmpeg_ok: boolean;
 }
@@ -108,6 +109,7 @@ export const api = {
   devices: () => invoke<Devices>("get_devices"),
   encoder: () => invoke<string>("get_encoder"),
   previewUrl: () => invoke<string>("get_preview_url"),
+  setScreenPreview: (target: ScreenTarget | null) => invoke<void>("set_screen_preview", { target }),
   setCamera: (index: number | null) => invoke<CameraDesc | null>("set_camera", { index }),
   setMic: (enabled: boolean, name: string | null) =>
     invoke<MicDesc | null>("set_mic", { enabled, name }),

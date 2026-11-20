@@ -150,6 +150,19 @@ const screenTarget = computed<ScreenTarget | null>(() => {
   return null;
 });
 
+// Vista previa en vivo de la pantalla o ventana elegida.
+const screenLive = ref(false);
+const screenKey = ref(0);
+watch(
+  screenTarget,
+  (t) => {
+    screenLive.value = false;
+    screenKey.value++;
+    void api.setScreenPreview(t).catch(() => {});
+  },
+  { immediate: true },
+);
+
 const stageTitle = computed(() => {
   const d = devices.value;
   if (!d) return { title: "Buscando dispositivos…", sub: "" };
@@ -392,7 +405,18 @@ onBeforeUnmount(() => {
 
     <main ref="scroller" class="scroll">
       <section class="stage" :class="{ live: recording && !status.paused }">
-        <div v-if="settings.screenMode !== 'none' || !cameraLive" class="stage-screen">
+        <img
+          v-if="screenTarget && devices"
+          v-show="screenLive"
+          :key="screenKey"
+          class="stage-shot"
+          :src="`${devices.screen_preview_url}?k=${screenKey}`"
+          alt="Vista previa de la pantalla"
+          @load="screenLive = true"
+          @error="screenLive = false"
+        />
+        <div v-if="screenTarget && screenLive" class="stage-tag">{{ stageTitle.title }}</div>
+        <div v-else-if="settings.screenMode !== 'none' || !cameraLive" class="stage-screen">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2.5" y="4" width="19" height="13" rx="2.2" />
             <path d="M8.5 20.5h7M12 17v3.5" />

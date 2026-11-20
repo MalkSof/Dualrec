@@ -1,6 +1,6 @@
 [package]
 name = "dualrec"
-version = "0.1.0"
+version = "0.1.1"
 description = "Grabador de pantalla y cámara en pistas separadas"
 authors = ["MalkaDigital"]
 edition = "2021"

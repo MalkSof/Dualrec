@@ -9,6 +9,7 @@ mod ffmpeg;
 mod preview;
 mod recorder;
 mod screen;
+mod screen_preview;
 
 use audio::{AudioCapture, AudioSource};
 use camera::{CamShared, CameraHandle};
@@ -30,6 +31,7 @@ struct AppState {
     /// Subidas a la nube de esta ejecución; la más nueva va primero.
     uploads: Mutex<Vec<Arc<Upload>>>,
     preview_port: u16,
+    screen_preview: Arc<screen_preview::ScreenPreview>,
 }
 
 type CmdResult<T> = Result<T, String>;
@@ -54,6 +56,7 @@ struct Devices {
     default_mic: Option<String>,
     system_output: Option<String>,
     preview_url: String,
+    screen_preview_url: String,
     default_dir: String,
     ffmpeg_ok: bool,
 }
@@ -68,6 +71,7 @@ fn get_devices(state: State<AppState>) -> Devices {
         default_mic: audio::default_input_name(),
         system_output: audio::default_output_name(),
         preview_url: format!("http://127.0.0.1:{}/cam.mjpg", state.preview_port),
+        screen_preview_url: format!("http://127.0.0.1:{}/screen.mjpg", state.preview_port),
         default_dir: default_dir().to_string_lossy().into_owned(),
         ffmpeg_ok: ffmpeg::available(),
     }
@@ -587,6 +591,12 @@ fn resume_cli(dir: Option<&String>) -> i32 {
     failed
 }
 
+/// Elige qué pantalla o ventana se muestra en la vista previa (`None` la apaga).
+#[tauri::command]
+fn set_screen_preview(state: State<AppState>, target: Option<ScreenTarget>) {
+    state.screen_preview.set_target(target);
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.iter().any(|a| a == "--caminfo") {
@@ -601,7 +611,9 @@ fn main() {
     }
 
     let cam_shared = Arc::new(CamShared::default());
-    let preview_port = preview::start(cam_shared.clone()).unwrap_or(0);
+    let screen_feed = Arc::new(preview::Feed::default());
+    let preview_port = preview::start(cam_shared.clone(), screen_feed.clone()).unwrap_or(0);
+    let screen_preview = screen_preview::ScreenPreview::spawn(screen_feed);
 
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -613,6 +625,7 @@ fn main() {
             session: Mutex::new(None),
             uploads: Mutex::new(Vec::new()),
             preview_port,
+            screen_preview,
         })
         .setup(|app| {
             // Atajos globales: la interfaz decide qué hacer con cada uno.
@@ -651,6 +664,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_devices,
             get_preview_url,
+            set_screen_preview,
             get_encoder,
             set_camera,
             set_mic,

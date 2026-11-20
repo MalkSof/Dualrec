@@ -36,5 +36,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" apps/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe \
+          # Copia con nombre fijo: la landing enlaza a releases/latest/download/Dualrec-setup.exe.
+          cp apps/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe Dualrec-setup.exe
+          gh release create "$GITHUB_REF_NAME" Dualrec-setup.exe apps/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe \
             --title "Dualrec ${GITHUB_REF_NAME#v}" --notes-file .github/release-notes.md
