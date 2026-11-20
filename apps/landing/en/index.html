@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dualrec — Free screen and webcam recorder for Windows with separate tracks</title>
+    <meta name="description" content="Free screen and webcam recorder for Windows. Saves screen, camera, microphone and system audio as separate, synced files that are ready to edit. No sign-up, no watermark." />
+    <meta name="theme-color" content="#0b0d12" />
+    <link rel="canonical" href="https://dualrec.malkadigital.com/en/" />
+    <link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/" />
+    <link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/" />
+    <link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/" />
+    <meta property="og:title" content="Dualrec — Record your screen and webcam as separate files" />
+    <meta property="og:description" content="One recording, four synced files: screen, camera, microphone and system audio. Free for Windows." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Dualrec" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_AR" />
+    <meta property="og:url" content="https://dualrec.malkadigital.com/en/" />
+    <meta property="og:image" content="https://dualrec.malkadigital.com/assets/og-en.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dualrec: screen, camera, microphone and system audio in four separate files" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://dualrec.malkadigital.com/assets/og-en.png" />
+    <!-- Structured data: tells search engines what Dualrec is and enables FAQ rich results. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Dualrec",
+        "description": "Screen and webcam recorder that saves screen, camera, microphone and system audio as separate, synced files.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "Windows 10, Windows 11",
+        "softwareVersion": "0.1.1",
+        "inLanguage": "en",
+        "url": "https://dualrec.malkadigital.com/en/",
+        "downloadUrl": "https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe",
+        "screenshot": "https://dualrec.malkadigital.com/assets/app.png",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "author": { "@type": "Organization", "name": "MalkaDigital" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I record my screen and webcam separately?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Open Dualrec, pick the screen or window and the camera, and press Record. When you stop you get two separate videos, screen.mp4 and camera.mp4, plus the microphone and system audio as their own files." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Dualrec free?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. Recording on your computer is free, with no sign-up and no watermark." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do the tracks stay in sync?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes. All tracks share one clock: they start at the same instant and have the same length, so in your editor you just drop them at the start of the timeline and they line up." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is it an alternative to Loom or OBS?",
+            "acceptedAnswer": { "@type": "Answer", "text": "It covers the same job as a screen recorder with a webcam overlay, with a different result: instead of one video with the camera burned in, you get each source as its own file. It is simpler than OBS (no scenes to set up) and, unlike Loom, it records on your computer with no account." }
+          },
+          {
+            "@type": "Question",
+            "name": "Does it work on Mac?",
+            "acceptedAnswer": { "@type": "Answer", "text": "For now Dualrec runs on Windows 10 and 11. A macOS version is planned." }
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need internet to record?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. Dualrec records offline and the files stay on your computer." }
+          },
+          {
+            "@type": "Question",
+            "name": "Which editors can open the recordings?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Any video editor. Videos are MP4 with H.264 and audio is M4A with AAC, formats that DaVinci Resolve, Premiere, CapCut and every common editor can open." }
+          }
+        ]
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
+    <link rel="stylesheet" href="../assets/site.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="#" aria-label="Dualrec">
+          <img src="../assets/logo.svg" alt="" width="30" height="30" />
+          Dualrec
+        </a>
+        <a class="link" href="#pistas">Tracks</a>
+        <a class="link" href="#funciones">Features</a>
+        <a class="link" href="#proximamente">Roadmap</a>
+        <a class="link" href="#preguntas">FAQ</a>
+        <a class="link" href="https://github.com/MalkSof/Dualrec">GitHub</a>
+        <a class="link lang" href="../" hreflang="es" lang="es">Español</a>
+      </nav>
+
+      <header class="hero">
+        <div>
+          <span class="eyebrow"><i></i> Free for Windows 10 and 11</span>
+          <h1>Record your screen and webcam <em>as separate files</em>.</h1>
+          <p class="lead">
+            Dualrec records screen, camera, microphone and system audio as four synced
+            files. Edit each one however you like, with no camera burned on top of the video.
+          </p>
+          <div class="cta">
+            <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+              Download for Windows
+            </a>
+            <a class="btn ghost" href="https://github.com/MalkSof/Dualrec">View the code</a>
+          </div>
+          <p class="fine">30 MB installer · no account or sign-up · recordings stay on your computer · the app interface is in Spanish for now</p>
+        </div>
+        <div class="shot">
+          <img src="../assets/app.png" width="568" height="997" fetchpriority="high" alt="Dualrec after a recording: it lists the files screen.mp4, camera.mp4, mic.m4a and system.m4a" />
+        </div>
+      </header>
+
+      <section id="pistas">
+        <h2>One recording, four files</h2>
+        <p class="sub">
+          Each source is saved to its own file, in one folder per recording. They all start at
+          the same instant and have the same length: drop them at the start of your timeline
+          and they are already aligned.
+        </p>
+        <div class="tracks">
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2.2" /><path d="M8.5 20.5h7M12 17v3.5" /></svg></div>
+            <code>screen.mp4</code>
+            <p>A full screen or a single window, at up to 60 frames per second.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="13.5" height="12" rx="2.4" /><path d="m16 10.5 5.5-3v9l-5.5-3" /></svg></div>
+            <code>camera.mp4</code>
+            <p>Your camera at full resolution, to place and crop wherever you want.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11.5" rx="3" /><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5" /></svg></div>
+            <code>mic.m4a</code>
+            <p>Your voice on its own, to clean it up or boost it without touching the rest.</p>
+          </div>
+          <div class="track">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5H4Z" /><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11" /></svg></div>
+            <code>system.m4a</code>
+            <p>Whatever plays on the computer, separate from the microphone.</p>
+          </div>
+        </div>
+        <div class="timeline" aria-hidden="true">
+          <p>This is how they land in your editor: same start and end marks.</p>
+          <div class="lane">screen.mp4 <span></span></div>
+          <div class="lane">camera.mp4 <span></span></div>
+          <div class="lane">mic.m4a <span></span></div>
+          <div class="lane">system.m4a <span></span></div>
+        </div>
+      </section>
+
+      <section id="usos">
+        <h2>What people use it for</h2>
+        <div class="grid">
+          <div class="feature">
+            <h3>Tutorials and courses</h3>
+            <p>Show the full screen when you explain a step and your face when you talk. You decide in the edit, not while recording.</p>
+          </div>
+          <div class="feature">
+            <h3>Product demos</h3>
+            <p>Record once and cut a horizontal version for YouTube and a vertical one for shorts, with the camera somewhere else.</p>
+          </div>
+          <div class="feature">
+            <h3>Classes and presentations</h3>
+            <p>If the camera covers part of a slide, move it or remove it for that part without recording again.</p>
+          </div>
+          <div class="feature">
+            <h3>Videos with clean audio</h3>
+            <p>Your voice and the computer sound are separate files: lower one without ruining the other.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="funciones">
+        <h2>Built so you can record without thinking about recording</h2>
+        <div class="grid">
+          <div class="feature">
+            <h3>Floating camera bubble</h3>
+            <p>See yourself while you record, move it out of the way and resize it with a double click.</p>
+          </div>
+          <div class="feature">
+            <h3>The app stays out of the video</h3>
+            <p>Dualrec and the bubble are left out of the screen recording. You can turn this off.</p>
+          </div>
+          <div class="feature">
+            <h3>Shortcuts from any app</h3>
+            <p><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> starts or stops and <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>P</kbd> pauses, without going back to the Dualrec window.</p>
+          </div>
+          <div class="feature">
+            <h3>Pause that keeps everything in sync</h3>
+            <p>When you pause, all four tracks skip the same stretch. They are still aligned when you resume.</p>
+          </div>
+          <div class="feature">
+            <h3>Uses your graphics card</h3>
+            <p>Encodes H.264 in hardware with NVIDIA, Intel or AMD, and on the CPU when there is none.</p>
+          </div>
+          <div class="feature">
+            <h3>If it closes, you keep what you recorded</h3>
+            <p>Each track is written to disk from the first second and still plays even if the app closes halfway.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>How it works</h2>
+        <div class="steps">
+          <ol>
+            <li><b>Pick what to record</b><span>Screen or window, camera, microphone and system audio. Each one turns on or off on its own.</span></li>
+            <li><b>Press Record</b><span>Or use the shortcut. Pause as many times as you want.</span></li>
+            <li><b>Stop and open the folder</b><span>The files are in <code>Videos\Dualrec</code>, one folder per recording, ready for your editor.</span></li>
+          </ol>
+          <img src="../assets/grabando.png" width="568" height="997" loading="lazy" alt="Dualrec while recording: REC indicator with the elapsed time and pause and stop buttons" />
+        </div>
+      </section>
+
+      <section id="proximamente">
+        <h2>Roadmap</h2>
+        <p class="sub">Dualrec starts as a recorder. The plan is for every video to be shareable and searchable.</p>
+        <div class="next">
+          <div>
+            <small>In progress</small>
+            <h3>Share link</h3>
+            <p>The recording uploads while you record, and when you stop you get a link with a web player, with the camera in a bubble you can hide.</p>
+          </div>
+          <div>
+            <small>Planned</small>
+            <h3>Transcript and summary</h3>
+            <p>Every video with its text, a summary and automatically generated chapters.</p>
+          </div>
+          <div>
+            <small>Planned</small>
+            <h3>Ask your videos</h3>
+            <p>Search in plain language and jump to the exact minute where you explained it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="preguntas">
+        <h2>Frequently asked questions</h2>
+        <div class="faq">
+          <details open>
+            <summary>How do I record my screen and webcam separately?</summary>
+            <p>Open Dualrec, pick the screen or window and the camera, and press Record. When you stop you get two separate videos, <code>screen.mp4</code> and <code>camera.mp4</code>, plus the microphone and system audio as their own files.</p>
+          </details>
+          <details>
+            <summary>Is Dualrec free?</summary>
+            <p>Yes. Recording on your computer is free, with no sign-up and no watermark.</p>
+          </details>
+          <details>
+            <summary>Do the tracks stay in sync?</summary>
+            <p>Yes. All tracks share one clock: they start at the same instant and have the same length, so in your editor you just drop them at the start of the timeline and they line up.</p>
+          </details>
+          <details>
+            <summary>Is it an alternative to Loom or OBS?</summary>
+            <p>It covers the same job as a screen recorder with a webcam overlay, with a different result: instead of one video with the camera burned in, you get each source as its own file. It is simpler than OBS (no scenes to set up) and, unlike Loom, it records on your computer with no account.</p>
+          </details>
+          <details>
+            <summary>How is it different from other screen recorders?</summary>
+            <p>Most of them give you a single video with the camera already burned on top of the screen. Dualrec gives you each source as its own file, so you decide in the edit where the camera goes, when it shows and how each audio sounds.</p>
+          </details>
+          <details>
+            <summary>Does it work on Mac?</summary>
+            <p>For now Dualrec runs on Windows 10 and 11. A macOS version is planned.</p>
+          </details>
+          <details>
+            <summary>Do I need internet to record?</summary>
+            <p>No. Dualrec records offline and the files stay on your computer.</p>
+          </details>
+          <details>
+            <summary>Which editors can open the recordings?</summary>
+            <p>Any video editor. Videos are MP4 with H.264 and audio is M4A with AAC, formats that DaVinci Resolve, Premiere, CapCut and every common editor can open.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="download">
+        <h2>Try it now</h2>
+        <p class="sub">Free, no sign-up. For Windows 10 and 11.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+            Download for Windows
+          </a>
+        </div>
+        <p class="fine">Windows may warn that the installer is not signed: choose “More info” and then “Run anyway”.</p>
+      </section>
+
+      <footer>
+        <span>Dualrec · made by MalkaDigital</span>
+        <a href="https://github.com/MalkSof/Dualrec">Code on GitHub</a>
+        <a href="https://github.com/MalkSof/Dualrec/releases">Releases</a>
+      </footer>
+    </div>
+  </body>
+</html>

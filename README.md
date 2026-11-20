@@ -7,9 +7,13 @@
   Pantalla, cámara, micrófono y audio del sistema en cuatro archivos sincronizados. Gratis para Windows.
 </p>
 <p align="center">
-  <a href="https://github.com/MalkSof/Dualrec/releases/download/v0.1.0/Dualrec_0.1.0_x64-setup.exe"><b>Descargar para Windows</b></a>
+  <a href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe"><b>Descargar para Windows</b></a>
   ·
   <a href="https://dualrec.malkadigital.com/">Sitio web</a>
+</p>
+<p align="center">
+  <b>English:</b> Dualrec is a free screen and webcam recorder for Windows that saves screen, camera, microphone and system audio as four separate, synced files, ready to edit.
+  <a href="https://dualrec.malkadigital.com/en/">Website in English</a>
 </p>
 <p align="center">
   <img src="apps/landing/assets/app.png" width="320" alt="Dualrec después de grabar: lista los cuatro archivos de la grabación" />
@@ -27,6 +31,7 @@ Grabador estilo Loom que guarda **pantalla, cámara, micrófono y audio del sist
 - **Burbuja de cámara flotante**, siempre visible, que se arrastra y cambia de tamaño con doble clic.
 - **Grabar, pausar y cortar**, también con atajos globales: `Ctrl+Alt+R` (grabar / cortar) y `Ctrl+Alt+P` (pausar / reanudar).
 - Dualrec y la burbuja **no salen en `screen.mp4`** (se excluyen de la captura; se puede desactivar).
+- **Vista previa en vivo** de la pantalla o ventana elegida, para ver qué se va a grabar.
 - **H.264 por hardware** cuando hay GPU (NVENC, Quick Sync o AMF) y x264 por CPU si no.
 - Cada grabación queda en `Videos\Dualrec\<fecha_hora>\` junto a un `session.json` con el detalle de cada pista.
 
