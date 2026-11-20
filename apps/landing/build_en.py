@@ -136,7 +136,11 @@ PAIRS = [
     ("Gratis, sin registro. Para Windows 10 y 11.", "Free, no sign-up. For Windows 10 and 11."),
     ("Windows puede avisar que el instalador no está firmado: elegí “Más información” y después “Ejecutar de todas formas”.",
      "Windows may warn that the installer is not signed: choose “More info” and then “Run anyway”."),
-    ("Dualrec · hecho por MalkaDigital", "Dualrec · made by MalkaDigital"),
+    ("<h2>¿Necesitás software a medida?</h2>", "<h2>Need custom software?</h2>"),
+    ("Dualrec lo hace <b>Malka Digital</b>, un estudio de software. Diseñamos y desarrollamos sistemas, aplicaciones y sitios web a medida que automatizan procesos y le ahorran tiempo a tu negocio.",
+     "Dualrec is made by <b>Malka Digital</b>, a software studio. We design and build custom systems, apps and websites that automate processes and save your business time."),
+    ("Conocé Malka Digital", "Visit Malka Digital"),
+    ("Dualrec · hecho por <a", "Dualrec · made by <a"),
     ("Código en GitHub", "Code on GitHub"),
     (">Versiones<", ">Releases<"),
 ]

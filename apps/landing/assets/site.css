@@ -625,3 +625,37 @@ nav a.link.lang {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ---------- Quién lo hace ---------- */
+
+.maker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 32px;
+  padding: 28px;
+  margin-bottom: 56px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: linear-gradient(120deg, rgba(139, 124, 255, 0.14), rgba(77, 163, 255, 0.06)), var(--card);
+}
+
+.maker div {
+  flex: 1 1 380px;
+}
+
+.maker h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  text-align: left;
+}
+
+.maker p {
+  margin: 0;
+  color: var(--muted);
+}
+
+footer span a {
+  color: inherit;
+  text-decoration: underline;
+}
