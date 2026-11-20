@@ -626,36 +626,168 @@ nav a.link.lang {
   }
 }
 
-/* ---------- Quién lo hace ---------- */
+/* ---------- Quién lo hace: Malka Digital (con sus colores) ---------- */
 
 .maker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 18px 32px;
-  padding: 28px;
-  margin-bottom: 56px;
-  border-radius: 18px;
-  border: 1px solid var(--line);
-  background: linear-gradient(120deg, rgba(139, 124, 255, 0.14), rgba(77, 163, 255, 0.06)), var(--card);
+  border-top: 0;
+  padding: 24px 0 72px;
 }
 
-.maker div {
-  flex: 1 1 380px;
+.maker-card {
+  --m-blue: #1e5be6;
+  --m-cyan: #38c6f4;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(24px, 4.5vw, 52px);
+  border-radius: 28px;
+  border: 1px solid rgba(56, 198, 244, 0.22);
+  background:
+    radial-gradient(700px 380px at 100% 0%, rgba(30, 91, 230, 0.34), transparent 65%),
+    radial-gradient(520px 320px at 0% 100%, rgba(56, 198, 244, 0.14), transparent 65%),
+    #0a1124;
+  box-shadow: 0 40px 100px -40px rgba(30, 91, 230, 0.55);
+}
+
+.maker-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.maker-brand img {
+  padding: 6px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.maker-brand b {
+  display: block;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.maker-brand small {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--m-cyan);
+}
+
+.maker-eyebrow {
+  margin: 30px 0 10px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--m-cyan);
 }
 
 .maker h2 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  text-align: left;
+  margin: 0;
+  max-width: 17em;
 }
 
-.maker p {
+.maker-lead {
+  margin: 14px 0 0;
+  max-width: 36em;
+  font-size: 18.5px;
+  color: #a2aec9;
+}
+
+.maker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 34px;
+}
+
+.maker-item {
+  padding: 22px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.maker-item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56, 198, 244, 0.4);
+  background: rgba(56, 198, 244, 0.06);
+}
+
+.maker-item svg {
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  border-radius: 12px;
+  color: var(--m-cyan);
+  background: rgba(56, 198, 244, 0.12);
+}
+
+.maker-item h3 {
+  margin: 16px 0 6px;
+  font-size: 17.5px;
+  font-weight: 650;
+}
+
+.maker-item p {
   margin: 0;
-  color: var(--muted);
+  font-size: 15px;
+  color: #a2aec9;
+}
+
+.maker-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+}
+
+.maker-points li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.maker-points svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--m-cyan);
+}
+
+.maker-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.btn.malka {
+  color: #fff;
+  background: linear-gradient(135deg, var(--m-blue), var(--m-cyan));
+  box-shadow: 0 12px 32px rgba(30, 91, 230, 0.45);
 }
 
 footer span a {
   color: inherit;
   text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .maker-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .maker-item {
+    transition: none;
+  }
 }
