@@ -7,6 +7,7 @@ import {
   formatClock,
   formatSize,
   type CameraDesc,
+  type ClaudeStatus,
   type CloudConfig,
   type Devices,
   type Manifest,
@@ -63,6 +64,10 @@ const status = ref<Status>({
 const cloudTest = ref<{ ok: boolean; text: string } | null>(null);
 const cloudTesting = ref(false);
 const linkCopied = ref(false);
+const claude = ref<ClaudeStatus | null>(null);
+const claudeBusy = ref(false);
+const claudeNote = ref<{ ok: boolean; text: string } | null>(null);
+const claudeCopied = ref(false);
 const level = ref(0);
 const busy = ref<"" | "starting" | "stopping">("");
 const error = ref("");
@@ -125,6 +130,30 @@ async function testCloud() {
   } finally {
     cloudTesting.value = false;
   }
+}
+
+async function loadClaude() {
+  if (settings.outDir) claude.value = await api.claudeStatus(settings.outDir).catch(() => null);
+}
+
+watch(() => settings.outDir, loadClaude);
+
+async function connectClaude() {
+  claudeBusy.value = true;
+  try {
+    claude.value = await api.claudeConnect(settings.outDir);
+    claudeNote.value = { ok: true, text: "Listo. Cerrá Claude del todo (también desde la bandeja) y volvé a abrirlo." };
+  } catch (e) {
+    claudeNote.value = { ok: false, text: String(e) };
+  } finally {
+    claudeBusy.value = false;
+  }
+}
+
+async function copyClaudeCommand() {
+  if (!claude.value) return;
+  claudeCopied.value = await api.copyText(claude.value.code_command);
+  setTimeout(() => (claudeCopied.value = false), 1800);
 }
 
 async function copyLink(link: string) {
@@ -351,6 +380,7 @@ onMounted(async () => {
     settings.cloudOn = true;
   }
   void resumePending();
+  void loadClaude();
 
   timer = window.setInterval(async () => {
     try {
@@ -602,6 +632,20 @@ onBeforeUnmount(() => {
             <button class="ghost" :disabled="cloudTesting || !settings.apiUrl.trim() || !settings.apiToken.trim()" @click="testCloud">{{ cloudTesting ? "Probando…" : "Probar conexión" }}</button>
             <small v-if="cloudTest" :class="cloudTest.ok ? 'good' : 'bad'">{{ cloudTest.text }}</small>
           </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary>Claude (IA) <small>{{ claude?.connected ? "conectado" : "armá videos y reels" }}</small></summary>
+        <div class="fields">
+          <p class="about">Conectá Dualrec con Claude y pedile en palabras que arme el video: "hacé un reel vertical con la mejor parte de mi última grabación" o "sacá los silencios y dejá la cámara en una burbuja".</p>
+          <div class="test">
+            <button class="ghost" :disabled="claudeBusy || !settings.outDir" @click="connectClaude">{{ claude?.connected ? "Volver a conectar" : "Conectar con Claude Desktop" }}</button>
+            <button class="ghost" :disabled="!claude" title="Copia el comando para sumarlo en Claude Code" @click="copyClaudeCommand">{{ claudeCopied ? "¡Copiado!" : "Copiar comando para Claude Code" }}</button>
+          </div>
+          <small v-if="claudeNote" :class="claudeNote.ok ? 'good' : 'bad'">{{ claudeNote.text }}</small>
+          <small v-else-if="claude && !claude.desktop_found" class="muted">Necesitás la app de Claude para escritorio (claude.ai/download).</small>
+          <small class="muted">Los videos que arma quedan en la subcarpeta <code>exports</code> de cada grabación.</small>
         </div>
       </details>
 

@@ -2,16 +2,86 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://dualrec.malkadigital.com/</loc>
-    <lastmod>2026-11-20</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/" />
   </url>
   <url>
     <loc>https://dualrec.malkadigital.com/en/</loc>
-    <lastmod>2026-11-20</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/blog/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/en/blog/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/" />
+  </url>
+  <url>
+    <loc>https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/</loc>
+    <lastmod>2026-11-22</lastmod>
+    <xhtml:link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/" />
   </url>
 </urlset>

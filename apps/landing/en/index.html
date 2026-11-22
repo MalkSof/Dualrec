@@ -32,7 +32,7 @@
         "description": "Screen and webcam recorder that saves screen, camera, microphone and system audio as separate, synced files.",
         "applicationCategory": "MultimediaApplication",
         "operatingSystem": "Windows 10, Windows 11",
-        "softwareVersion": "0.1.1",
+        "softwareVersion": "0.1.2",
         "inLanguage": "en",
         "url": "https://dualrec.malkadigital.com/en/",
         "downloadUrl": "https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe",
@@ -85,6 +85,7 @@
         ]
       }
     </script>
+    <link rel="alternate" type="application/rss+xml" title="Dualrec blog" href="blog/feed.xml" />
     <link rel="icon" type="image/svg+xml" href="../assets/logo.svg" />
     <link rel="stylesheet" href="../assets/site.css" />
   </head>
@@ -97,8 +98,10 @@
         </a>
         <a class="link" href="#pistas">Tracks</a>
         <a class="link" href="#funciones">Features</a>
+        <a class="link" href="#ia">AI</a>
         <a class="link" href="#proximamente">Roadmap</a>
         <a class="link" href="#preguntas">FAQ</a>
+        <a class="link" href="blog/">Blog</a>
         <a class="link" href="https://github.com/MalkSof/Dualrec">GitHub</a>
         <a class="link lang" href="../" hreflang="es" lang="es">Español</a>
       </nav>
@@ -227,6 +230,25 @@
         </div>
       </section>
 
+      <section id="ia" class="ai">
+        <p class="ai-tag">New in version 0.1.2</p>
+        <h2>Ask Claude for the video</h2>
+        <p class="sub">Dualrec ships with an MCP connector for Claude. Because each source is its own file, the AI builds the video for you: write what you want and it exports the MP4 on your computer.</p>
+        <div class="ai-grid">
+          <div class="ai-chat" aria-label="Example request to Claude">
+            <p class="me">Make a vertical Reel from the part where I show the dashboard. Screen on top, camera below, and cut the silences.</p>
+            <p class="bot">Done: <code>reel.mp4</code>, 28 seconds, 1080 × 1920. It is in the recording's <code>exports</code> folder.</p>
+          </div>
+          <ul class="ai-list">
+            <li><b>Long videos</b><span>Horizontal for YouTube, with the camera in a bubble or on the side and the silences removed.</span></li>
+            <li><b>Reels, Shorts and TikToks</b><span>Vertical, with the screen on top and the camera below, zoomed so text is readable on a phone.</span></li>
+            <li><b>Title, captions and audio</b><span>A hook title, burned-in captions and loudness leveled for social networks.</span></li>
+            <li><b>All on your computer</b><span>It connects with one button from the app. Videos are not uploaded anywhere.</span></li>
+          </ul>
+        </div>
+        <p class="fine"><a href="blog/edit-videos-with-claude-ai-mcp/">How to connect it and what you can ask for →</a></p>
+      </section>
+
       <section id="proximamente">
         <h2>Roadmap</h2>
         <p class="sub">Dualrec starts as a recorder. The plan is for every video to be shareable and searchable.</p>
@@ -339,6 +361,7 @@
 
       <footer>
         <span>Dualrec · made by <a href="https://malkadigital.com/">Malka Digital</a></span>
+        <a href="blog/">Blog</a>
         <a href="https://github.com/MalkSof/Dualrec">Code on GitHub</a>
         <a href="https://github.com/MalkSof/Dualrec/releases">Releases</a>
       </footer>

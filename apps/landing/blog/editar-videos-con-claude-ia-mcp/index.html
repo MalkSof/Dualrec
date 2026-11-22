@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <!-- Generado por build_blog.py a partir de posts/: no editar a mano. -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cómo armar videos y reels con IA: Dualrec conectado a Claude — Dualrec</title>
+    <meta name="description" content="Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora." />
+    <meta name="theme-color" content="#0b0d12" />
+    <link rel="canonical" href="https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/" />
+    <link rel="alternate" hreflang="es" href="https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/" />
+    <link rel="alternate" hreflang="en" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+    <link rel="alternate" hreflang="x-default" href="https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/" />
+    <link rel="alternate" type="application/rss+xml" title="Blog de Dualrec" href="https://dualrec.malkadigital.com/blog/feed.xml" />
+    <meta property="og:title" content="Cómo armar videos y reels con IA: Dualrec conectado a Claude — Dualrec" />
+    <meta property="og:description" content="Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora." />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Dualrec" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:url" content="https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/" />
+    <meta property="og:image" content="https://dualrec.malkadigital.com/assets/og-es.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dualrec: pantalla, cámara, micrófono y audio del sistema en cuatro archivos separados" />
+    <meta property="article:published_time" content="2026-11-22" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cómo armar videos y reels con IA: Dualrec conectado a Claude — Dualrec" />
+    <meta name="twitter:description" content="Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora." />
+    <meta name="twitter:image" content="https://dualrec.malkadigital.com/assets/og-es.png" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cómo armar videos y reels con IA: Dualrec conectado a Claude",
+  "description": "Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora.",
+  "datePublished": "2026-11-22",
+  "dateModified": "2026-11-22",
+  "inLanguage": "es",
+  "url": "https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/"
+  },
+  "image": "https://dualrec.malkadigital.com/assets/og-es.png",
+  "wordCount": 754,
+  "author": {
+    "@type": "Organization",
+    "name": "Malka Digital",
+    "url": "https://malkadigital.com/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Malka Digital",
+    "url": "https://malkadigital.com/"
+  }
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Dualrec",
+      "item": "https://dualrec.malkadigital.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://dualrec.malkadigital.com/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cómo armar videos y reels con IA: Dualrec conectado a Claude",
+      "item": "https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/"
+    }
+  ]
+}
+    </script>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Necesito pagar para usar el conector?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Dualrec y su conector son gratis. Lo que necesitás es la app de Claude (Claude Desktop o Claude Code) con tu cuenta de Claude."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Mis videos se suben a internet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Los videos se exportan en tu computadora y quedan en la carpeta de la grabación. Claude recibe los datos de la grabación y las imágenes sueltas que pide para ver qué hay en pantalla."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Funciona con otros asistentes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "El conector usa el protocolo MCP estándar, así que debería funcionar con cualquier programa compatible que pueda ejecutar un servidor MCP local. Está probado con Claude."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Puede generar los subtítulos solo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Todavía no. Dualrec pega en el video los subtítulos que le pases con sus tiempos, pero no transcribe el audio."
+      }
+    }
+  ]
+}
+    </script>
+    <link rel="icon" type="image/svg+xml" href="../../assets/logo.svg" />
+    <link rel="stylesheet" href="../../assets/site.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="../../" aria-label="Dualrec">
+          <img src="../../assets/logo.svg" alt="" width="30" height="30" />
+          Dualrec
+        </a>
+        <a class="link" href="../../">Inicio</a>
+        <a class="link keep" href="../../blog/">Blog</a>
+        <a class="link" href="https://github.com/MalkSof/Dualrec">GitHub</a>
+        <a class="link lang keep" href="../../en/blog/edit-videos-with-claude-ai-mcp/" hreflang="en" lang="en">English</a>
+      </nav>
+
+      <main>
+        <article class="post">
+          <p class="crumbs"><a href="../../">Dualrec</a> › <a href="../../blog/">Blog</a></p>
+          <h1>Cómo armar videos y reels con IA: Dualrec conectado a Claude</h1>
+          <p class="post-meta"><time datetime="2026-11-22">22 de noviembre de 2026</time> · 4 min de lectura · <a href="../../en/blog/edit-videos-with-claude-ai-mcp/" hreflang="en" lang="en">Read this in English</a></p>
+          <aside class="post-cta">
+            <p><strong>Dualrec</strong> es un grabador gratuito para Windows 10 y 11: guarda pantalla, cámara, micrófono y audio del sistema en cuatro archivos sincronizados.</p>
+            <div class="cta">
+              <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+              Descargar para Windows
+            </a>
+            </div>
+            <p class="fine">Instalador de 30 MB · sin cuenta ni registro · sin marca de agua</p>
+          </aside>
+          <div class="prose">
+<p>Grabar es la parte fácil. Lo que lleva tiempo es lo que viene después: abrir el editor, alinear las pistas, cortar los silencios, armar la versión vertical. Desde la versión 0.1.2, Dualrec incluye un conector para Claude que hace ese trabajo a partir de un pedido escrito en palabras.</p>
+<p>Funciona porque Dualrec guarda la pantalla, la cámara, el micrófono y el audio del sistema en archivos separados. Con las piezas sueltas, un asistente puede decidir dónde va cada una sin tener que desarmar un video ya mezclado.</p>
+
+<h2>Qué es el conector</h2>
+<p>Es un servidor MCP (Model Context Protocol), el estándar que usan los asistentes para conectarse con programas. Viene dentro de Dualrec: no hay nada extra que instalar ni una cuenta nueva que crear. Cuando Claude lo usa, Dualrec le da cinco herramientas:</p>
+<ul>
+  <li><strong>Ver tus grabaciones</strong>: la lista, la duración y qué pistas tiene cada una.</li>
+  <li><strong>Detectar dónde hablás</strong>: analiza el micrófono y marca los tramos con voz y los silencios.</li>
+  <li><strong>Mirar la grabación</strong>: saca imágenes de la pantalla y de la cámara en los segundos que haga falta, para saber qué se está mostrando.</li>
+  <li><strong>Exportar un video</strong>: combina las pistas y guarda un MP4 terminado.</li>
+  <li><strong>Consultar una exportación</strong> que todavía está en curso.</li>
+</ul>
+<p>Los videos se arman en tu computadora, con el mismo FFmpeg que usa Dualrec para grabar. Los archivos de video no se suben a ningún lado. Lo que sí recibe Claude es lo que le devuelven las herramientas: los datos de la grabación y las imágenes que pide para mirar.</p>
+
+<h2>Cómo conectarlo</h2>
+<h3>Con Claude Desktop</h3>
+<ol>
+  <li>Instalá <a href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe">Dualrec 0.1.2 o posterior</a> y la app de Claude para escritorio.</li>
+  <li>En Dualrec, abrí la sección <strong>Claude (IA)</strong> y apretá <strong>Conectar con Claude Desktop</strong>.</li>
+  <li>Cerrá Claude del todo (también desde la bandeja del sistema) y volvé a abrirlo.</li>
+</ol>
+<h3>Con Claude Code</h3>
+<p>En la misma sección, el botón <strong>Copiar comando para Claude Code</strong> deja en el portapapeles el comando listo para pegar en la terminal.</p>
+
+<h2>Qué le podés pedir</h2>
+<ul>
+  <li>"Armá un video horizontal con mi última grabación: sacá los silencios y dejá la cámara en una burbuja abajo a la derecha."</li>
+  <li>"Hacé un reel vertical de 30 segundos con la parte donde muestro el panel. Pantalla arriba, cámara abajo y zoom en la tabla."</li>
+  <li>"Exportá solo la cámara en formato cuadrado, del minuto 2 al 3."</li>
+  <li>"Poné este título arriba los primeros segundos y estos subtítulos en estos tiempos."</li>
+</ul>
+
+<h2>Los formatos que arma</h2>
+<ul>
+  <li><strong>Horizontal</strong> (1920 × 1080) para YouTube, <strong>vertical</strong> (1080 × 1920) para reels, Shorts y TikTok, y <strong>cuadrado</strong> (1080 × 1080).</li>
+  <li><strong>Burbuja</strong>: la pantalla de fondo y la cámara en un círculo o en un recuadro con borde, en la esquina que elijas.</li>
+  <li><strong>Apilado</strong>: la pantalla arriba y la cámara abajo. Es el formato habitual de los tutoriales verticales.</li>
+  <li><strong>Lado a lado</strong>, o <strong>solo pantalla</strong> o <strong>solo cámara</strong>.</li>
+  <li><strong>Zoom en la pantalla</strong>, para que el texto se lea en un celular.</li>
+  <li><strong>Cortes</strong>: los tramos que quieras, unidos en orden, o todos los silencios afuera.</li>
+  <li><strong>Título y subtítulos</strong> pegados en el video.</li>
+  <li><strong>Audio</strong>: volumen de la voz y del sistema por separado, con el nivel ajustado para redes.</li>
+</ul>
+<p>Cada video queda en la subcarpeta <code>exports</code> de la grabación.</p>
+
+<h2>Lo que todavía no hace</h2>
+<p>Claude no escucha el audio. Sabe <em>cuándo</em> hablás, por los silencios, y <em>qué</em> hay en pantalla, por las imágenes, pero no lo que decís. Por eso los subtítulos se arman a partir de un texto que le pases, y conviene indicarle qué parte te interesa ("donde muestro el panel", "del minuto 2 al 3"). La transcripción automática está en los planes.</p>
+<p>Si querés entender la base de todo esto, leé <a href="../../blog/por-que-grabar-en-pistas-separadas/">por qué grabar en pistas separadas mejora la edición</a>. Y si preferís hacerlo a mano, está la guía para <a href="../../blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/">armar videos verticales en el editor</a>.</p>
+
+<h2 id="faq">Preguntas frecuentes</h2>
+<h3>¿Necesito pagar para usar el conector?</h3>
+<p>Dualrec y su conector son gratis. Lo que necesitás es la app de Claude (Claude Desktop o Claude Code) con tu cuenta de Claude.</p>
+<h3>¿Mis videos se suben a internet?</h3>
+<p>No. Los videos se exportan en tu computadora y quedan en la carpeta de la grabación. Claude recibe los datos de la grabación y las imágenes sueltas que pide para ver qué hay en pantalla.</p>
+<h3>¿Funciona con otros asistentes?</h3>
+<p>El conector usa el protocolo MCP estándar, así que debería funcionar con cualquier programa compatible que pueda ejecutar un servidor MCP local. Está probado con Claude.</p>
+<h3>¿Puede generar los subtítulos solo?</h3>
+<p>Todavía no. Dualrec pega en el video los subtítulos que le pases con sus tiempos, pero no transcribe el audio.</p>
+          </div>
+        </article>
+      </main>
+
+      <section class="more">
+        <h2>Más notas del blog</h2>
+        <div class="post-list">
+          <a class="post-card" href="../../blog/grabar-pantalla-y-camara-por-separado-windows/">
+            <time datetime="2026-11-22">22 de noviembre de 2026</time>
+            <h3>Cómo grabar pantalla y cámara por separado en Windows</h3>
+            <p>Guía paso a paso para grabar la pantalla y la cámara web en archivos separados y sincronizados en Windows 10 y 11, gratis, sin cuenta y sin configurar escenas.</p>
+            <span class="go">Leer la nota →</span>
+          </a>
+          <a class="post-card" href="../../blog/por-que-grabar-en-pistas-separadas/">
+            <time datetime="2026-11-22">22 de noviembre de 2026</time>
+            <h3>Por qué grabar en pistas separadas mejora la edición</h3>
+            <p>Con la pantalla, la cámara y el audio en archivos separados podés mover u ocultar la cámara, limpiar solo la voz y sacar una versión horizontal y otra vertical de la misma grabación.</p>
+            <span class="go">Leer la nota →</span>
+          </a>
+          <a class="post-card" href="../../blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/">
+            <time datetime="2026-11-22">22 de noviembre de 2026</time>
+            <h3>Cómo hacer reels, Shorts y TikToks verticales desde una grabación de pantalla</h3>
+            <p>Paso a paso para convertir una grabación de pantalla horizontal en videos verticales para reels, YouTube Shorts y TikTok, aprovechando que la cámara está en su propio archivo.</p>
+            <span class="go">Leer la nota →</span>
+          </a>
+        </div>
+        <p class="fine"><a href="../../blog/">Ver todas las notas →</a></p>
+      </section>
+
+      <section class="download">
+        <h2>Probá Dualrec gratis</h2>
+        <p class="sub">Una grabación, cuatro archivos sincronizados. Sin registro, sin marca de agua y sin límite de tiempo. Para Windows 10 y 11.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14" /></svg>
+              Descargar para Windows
+            </a>
+          <a class="btn ghost" href="../../">Conocer Dualrec</a>
+        </div>
+        <p class="fine">Windows puede avisar que el instalador no está firmado: elegí “Más información” y después “Ejecutar de todas formas”.</p>
+      </section>
+
+      <section class="maker" id="malka">
+        <div class="maker-card">
+          <a class="maker-brand" href="https://malkadigital.com/" aria-label="Malka Digital">
+            <img src="../../assets/malka.png" width="44" height="44" alt="" loading="lazy" />
+            <span><b>Malka Digital</b><small>Software studio</small></span>
+          </a>
+          <p class="maker-eyebrow">El estudio que hace Dualrec</p>
+          <h2>¿Tu negocio necesita su propio sistema?</h2>
+          <p class="maker-lead">Diseñamos y desarrollamos software a medida que automatiza tus procesos, te ahorra tiempo y te ayuda a crecer.</p>
+          <div class="maker-cta">
+            <a class="btn malka" href="https://malkadigital.com/#contacto">Contanos tu proyecto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" /></svg></a>
+            <a class="btn ghost" href="https://malkadigital.com/#proyectos">Ver proyectos</a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>Dualrec · hecho por <a href="https://malkadigital.com/">Malka Digital</a></span>
+        <a href="../../">Inicio</a>
+        <a href="../../blog/">Blog</a>
+        <a href="https://github.com/MalkSof/Dualrec">Código en GitHub</a>
+        <a href="https://github.com/MalkSof/Dualrec/releases">Versiones</a>
+      </footer>
+    </div>
+  </body>
+</html>

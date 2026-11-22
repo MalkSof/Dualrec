@@ -1,0 +1,68 @@
+<!--
+slug: record-screen-and-webcam-separately-windows
+title: How to record your screen and webcam as separate files on Windows
+description: A step-by-step guide to recording your screen and webcam as separate, synced files on Windows 10 and 11. Free, with no account and no scenes to set up.
+date: 2026-11-22
+-->
+<p>If you have ever recorded a tutorial with your face in the corner, you know how it ends: one video file, with the webcam baked in wherever it happened to be. If it covers a button, if you wanted to be full screen for the intro, or if you need a vertical cut for social media, your only real option is to record again.</p>
+<p>The fix is to record every source to its own file: the screen in one, the webcam in another, and the audio on its own. This guide shows how to do that on Windows 10 and 11 with <a href="{{home}}">Dualrec</a>, a free, open-source recorder built for exactly this job.</p>
+
+<h2>What “separate files” actually means</h2>
+<p>Most screen recorders hand you a single video with the camera already overlaid. Recording separately is different: when you stop, you get several files that started at the same instant and have the same length. Dualrec gives you four:</p>
+<ul>
+  <li><code>screen.mp4</code>: a full screen or a single window.</li>
+  <li><code>camera.mp4</code>: your webcam at full resolution.</li>
+  <li><code>mic.m4a</code>: your voice.</li>
+  <li><code>system.m4a</code>: whatever is playing on the computer.</li>
+</ul>
+<p>Video is H.264 and audio is AAC, two formats every editor opens. Because all four files share a starting point, there is nothing to sync by hand.</p>
+
+<h2>Your options on Windows</h2>
+<p>Before the steps, a quick look at the tools people usually reach for:</p>
+<ul>
+  <li><strong>OBS</strong> is free, open source and very powerful, but it is built around streaming and compositing: you set up scenes and sources before you can record.</li>
+  <li><strong>Loom</strong> is cloud-first: it asks for an account, and its strength is sharing a quick link rather than handing you footage to edit.</li>
+  <li><strong>Dualrec</strong> does one thing: it records each source to its own file, on your computer, with no account and no scenes to build.</li>
+</ul>
+<p>If the goal is freedom in the edit, the third route is the shortest.</p>
+
+<h2>Step by step with Dualrec</h2>
+<p>One heads-up first: the app interface is in Spanish for now, so the button names below are shown as they appear on screen.</p>
+<ol>
+  <li><strong>Download and install.</strong> Get the <a href="{{download}}">Windows installer</a> (about 30 MB). It is not code-signed yet, so Windows may show a SmartScreen warning: choose “More info” and then “Run anyway”.</li>
+  <li><strong>Pick what to capture.</strong> Choose a whole screen or a single window. The live preview shows what will be recorded, so you can confirm you picked the right one before you start.</li>
+  <li><strong>Turn on the sources you need.</strong> Camera, microphone and system audio each have their own switch. If you do not want the computer sound, just leave it off.</li>
+  <li><strong>Place the camera bubble.</strong> It is a small floating window that lets you see yourself while recording. Drag it out of the way: it is left out of <code>screen.mp4</code>, so it does not matter what it covers.</li>
+  <li><strong>Press Grabar (Record).</strong> Or use the <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> shortcut, which works from any app.</li>
+  <li><strong>Pause when you need to.</strong> <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>P</kbd> pauses and resumes. All four tracks skip the same stretch, so they stay aligned.</li>
+  <li><strong>Stop and open the folder.</strong> Press <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> again, or click Cortar (Stop). Your files are in <code>Videos\Dualrec</code>, one folder per recording.</li>
+</ol>
+<p>There is no account to create, no watermark and no time limit, and you do not need an internet connection to record.</p>
+
+<h2>Using the files in your editor</h2>
+<p>Open your video editor (DaVinci Resolve, Premiere, CapCut or whichever you use), import the four files and drop them at the start of the timeline, each on its own track. They are already lined up. From there you can:</p>
+<ul>
+  <li>Shrink the webcam video and put it in any corner, or keep it full screen for the intro.</li>
+  <li>Hide the camera wherever it would cover something important.</li>
+  <li>Boost or clean up your voice without touching the computer sound.</li>
+</ul>
+<p>We go deeper into what you gain in <a href="{{post:pistas-separadas}}">why separate tracks make editing easier</a>, and <a href="{{post:videos-verticales}}">how to make vertical videos from a screen recording</a> walks through cutting Shorts and Reels from the same footage.</p>
+
+<h2>Tips for getting it right the first time</h2>
+<ul>
+  <li><strong>Do a short test.</strong> Record ten seconds, open the folder and check that the right screen was captured and the microphone sounds good.</li>
+  <li><strong>Record a window if you do not need the whole desktop.</strong> Other apps and the taskbar stay out of the shot.</li>
+  <li><strong>Wear headphones.</strong> If the computer sound comes out of speakers, the microphone picks it up too, and your two audio tracks are no longer truly separate.</li>
+  <li><strong>Mind the light.</strong> A window or a lamp in front of you improves any webcam more than tweaking its settings.</li>
+  <li><strong>Use the shortcuts.</strong> Starting and stopping from the keyboard means you do not have to trim the moment you reach for the button.</li>
+</ul>
+
+<!-- faq -->
+<h3>Can I record only the screen, without the webcam?</h3>
+<p>Yes. Each source turns on or off on its own, so you can record just the screen, the screen plus the microphone, or any other combination.</p>
+<h3>Do the files stay in sync?</h3>
+<p>Yes. Every track starts at the same instant and has the same length. In your editor, placing them all at the start of the timeline is enough.</p>
+<h3>Does Dualrec add a watermark or limit recording time?</h3>
+<p>No. It is free, needs no account, adds no watermark and does not cap how long you can record.</p>
+<h3>Does it work on Mac?</h3>
+<p>Not yet. Dualrec runs on Windows 10 and 11, and a Mac version is planned.</p>

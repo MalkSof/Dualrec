@@ -44,6 +44,23 @@ Videos/Dualrec/2026-11-18_18-05-48/
 └── session.json   manifiesto: pistas, duración, offsets, tamaños
 ```
 
+## Conector para Claude (MCP)
+
+Dualrec incluye un servidor MCP local para que un asistente arme videos a partir de las grabaciones. Corre con `dualrec.exe --mcp [carpeta]` (JSON-RPC por stdio, sin dependencias extra) y usa el mismo FFmpeg del grabador.
+
+- **Claude Desktop:** en la app, sección "Claude (IA)" → "Conectar con Claude Desktop". Agrega la entrada `dualrec` a `claude_desktop_config.json` sin tocar el resto.
+- **Claude Code:** `claude mcp add dualrec -- "<ruta a dualrec.exe>" --mcp "<carpeta de grabaciones>"` (la app copia el comando exacto).
+
+| Herramienta | Qué hace |
+|---|---|
+| `list_recordings` | Lista las grabaciones con duración, pistas y exportaciones. |
+| `get_recording` | Detalle de una grabación y tramos con voz (detección de silencios del micrófono). |
+| `get_frames` | Imágenes de la pantalla y la cámara en los segundos pedidos. |
+| `render` | Exporta un MP4: horizontal, vertical o cuadrado; cámara en burbuja, apilado, lado a lado, solo pantalla o solo cámara; zoom, cortes, silencios afuera, título, subtítulos y audio nivelado. |
+| `render_status` | Estado de una exportación larga. |
+
+Los videos quedan en `exports/` dentro de la carpeta de la grabación. Todavía no transcribe el audio: los subtítulos se arman con el texto que se le pase. El código está en `apps/desktop/src-tauri/src/mcp.rs`.
+
 ## Nube y link para compartir
 
 En **Ajustes → Nube** de la app se carga la dirección de la API y el token de acceso. Con eso activado:

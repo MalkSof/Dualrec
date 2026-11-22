@@ -105,6 +105,12 @@ export interface Status {
   uploads_active: number;
 }
 
+export interface ClaudeStatus {
+  desktop_found: boolean;
+  connected: boolean;
+  code_command: string;
+}
+
 export const api = {
   devices: () => invoke<Devices>("get_devices"),
   encoder: () => invoke<string>("get_encoder"),
@@ -121,6 +127,8 @@ export const api = {
   recordings: (dir: string) => invoke<Manifest[]>("list_recordings", { dir }),
   openFolder: (path: string) => invoke<void>("open_folder", { path }),
   copyText: (text: string) => invoke<boolean>("copy_text", { text }),
+  claudeStatus: (dir: string) => invoke<ClaudeStatus>("claude_status", { dir }),
+  claudeConnect: (dir: string) => invoke<ClaudeStatus>("claude_connect", { dir }),
   cloudDefaults: () => invoke<[string, string] | null>("cloud_defaults"),
   cloudCheck: (cloud: CloudConfig) => invoke<string>("cloud_check", { cloud }),
   resumeUploads: (cloud: CloudConfig, dir: string) =>

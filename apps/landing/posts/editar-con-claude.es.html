@@ -1,0 +1,64 @@
+<!--
+slug: editar-videos-con-claude-ia-mcp
+title: Cómo armar videos y reels con IA: Dualrec conectado a Claude
+description: Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora.
+date: 2026-11-22
+-->
+<p>Grabar es la parte fácil. Lo que lleva tiempo es lo que viene después: abrir el editor, alinear las pistas, cortar los silencios, armar la versión vertical. Desde la versión 0.1.2, Dualrec incluye un conector para Claude que hace ese trabajo a partir de un pedido escrito en palabras.</p>
+<p>Funciona porque Dualrec guarda la pantalla, la cámara, el micrófono y el audio del sistema en archivos separados. Con las piezas sueltas, un asistente puede decidir dónde va cada una sin tener que desarmar un video ya mezclado.</p>
+
+<h2>Qué es el conector</h2>
+<p>Es un servidor MCP (Model Context Protocol), el estándar que usan los asistentes para conectarse con programas. Viene dentro de Dualrec: no hay nada extra que instalar ni una cuenta nueva que crear. Cuando Claude lo usa, Dualrec le da cinco herramientas:</p>
+<ul>
+  <li><strong>Ver tus grabaciones</strong>: la lista, la duración y qué pistas tiene cada una.</li>
+  <li><strong>Detectar dónde hablás</strong>: analiza el micrófono y marca los tramos con voz y los silencios.</li>
+  <li><strong>Mirar la grabación</strong>: saca imágenes de la pantalla y de la cámara en los segundos que haga falta, para saber qué se está mostrando.</li>
+  <li><strong>Exportar un video</strong>: combina las pistas y guarda un MP4 terminado.</li>
+  <li><strong>Consultar una exportación</strong> que todavía está en curso.</li>
+</ul>
+<p>Los videos se arman en tu computadora, con el mismo FFmpeg que usa Dualrec para grabar. Los archivos de video no se suben a ningún lado. Lo que sí recibe Claude es lo que le devuelven las herramientas: los datos de la grabación y las imágenes que pide para mirar.</p>
+
+<h2>Cómo conectarlo</h2>
+<h3>Con Claude Desktop</h3>
+<ol>
+  <li>Instalá <a href="{{download}}">Dualrec 0.1.2 o posterior</a> y la app de Claude para escritorio.</li>
+  <li>En Dualrec, abrí la sección <strong>Claude (IA)</strong> y apretá <strong>Conectar con Claude Desktop</strong>.</li>
+  <li>Cerrá Claude del todo (también desde la bandeja del sistema) y volvé a abrirlo.</li>
+</ol>
+<h3>Con Claude Code</h3>
+<p>En la misma sección, el botón <strong>Copiar comando para Claude Code</strong> deja en el portapapeles el comando listo para pegar en la terminal.</p>
+
+<h2>Qué le podés pedir</h2>
+<ul>
+  <li>"Armá un video horizontal con mi última grabación: sacá los silencios y dejá la cámara en una burbuja abajo a la derecha."</li>
+  <li>"Hacé un reel vertical de 30 segundos con la parte donde muestro el panel. Pantalla arriba, cámara abajo y zoom en la tabla."</li>
+  <li>"Exportá solo la cámara en formato cuadrado, del minuto 2 al 3."</li>
+  <li>"Poné este título arriba los primeros segundos y estos subtítulos en estos tiempos."</li>
+</ul>
+
+<h2>Los formatos que arma</h2>
+<ul>
+  <li><strong>Horizontal</strong> (1920 × 1080) para YouTube, <strong>vertical</strong> (1080 × 1920) para reels, Shorts y TikTok, y <strong>cuadrado</strong> (1080 × 1080).</li>
+  <li><strong>Burbuja</strong>: la pantalla de fondo y la cámara en un círculo o en un recuadro con borde, en la esquina que elijas.</li>
+  <li><strong>Apilado</strong>: la pantalla arriba y la cámara abajo. Es el formato habitual de los tutoriales verticales.</li>
+  <li><strong>Lado a lado</strong>, o <strong>solo pantalla</strong> o <strong>solo cámara</strong>.</li>
+  <li><strong>Zoom en la pantalla</strong>, para que el texto se lea en un celular.</li>
+  <li><strong>Cortes</strong>: los tramos que quieras, unidos en orden, o todos los silencios afuera.</li>
+  <li><strong>Título y subtítulos</strong> pegados en el video.</li>
+  <li><strong>Audio</strong>: volumen de la voz y del sistema por separado, con el nivel ajustado para redes.</li>
+</ul>
+<p>Cada video queda en la subcarpeta <code>exports</code> de la grabación.</p>
+
+<h2>Lo que todavía no hace</h2>
+<p>Claude no escucha el audio. Sabe <em>cuándo</em> hablás, por los silencios, y <em>qué</em> hay en pantalla, por las imágenes, pero no lo que decís. Por eso los subtítulos se arman a partir de un texto que le pases, y conviene indicarle qué parte te interesa ("donde muestro el panel", "del minuto 2 al 3"). La transcripción automática está en los planes.</p>
+<p>Si querés entender la base de todo esto, leé <a href="{{post:pistas-separadas}}">por qué grabar en pistas separadas mejora la edición</a>. Y si preferís hacerlo a mano, está la guía para <a href="{{post:videos-verticales}}">armar videos verticales en el editor</a>.</p>
+
+<!-- faq -->
+<h3>¿Necesito pagar para usar el conector?</h3>
+<p>Dualrec y su conector son gratis. Lo que necesitás es la app de Claude (Claude Desktop o Claude Code) con tu cuenta de Claude.</p>
+<h3>¿Mis videos se suben a internet?</h3>
+<p>No. Los videos se exportan en tu computadora y quedan en la carpeta de la grabación. Claude recibe los datos de la grabación y las imágenes sueltas que pide para ver qué hay en pantalla.</p>
+<h3>¿Funciona con otros asistentes?</h3>
+<p>El conector usa el protocolo MCP estándar, así que debería funcionar con cualquier programa compatible que pueda ejecutar un servidor MCP local. Está probado con Claude.</p>
+<h3>¿Puede generar los subtítulos solo?</h3>
+<p>Todavía no. Dualrec pega en el video los subtítulos que le pases con sus tiempos, pero no transcribe el audio.</p>

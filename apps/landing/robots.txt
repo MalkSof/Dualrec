@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Fuentes de las notas del blog (fragmentos sin plantilla): las páginas reales están en /blog/ y /en/blog/.
+Disallow: /posts/
 
 Sitemap: https://dualrec.malkadigital.com/sitemap.xml

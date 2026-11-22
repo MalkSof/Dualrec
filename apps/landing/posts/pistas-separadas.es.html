@@ -1,0 +1,71 @@
+<!--
+slug: por-que-grabar-en-pistas-separadas
+title: Por qué grabar en pistas separadas mejora la edición
+description: Con la pantalla, la cámara y el audio en archivos separados podés mover u ocultar la cámara, limpiar solo la voz y sacar una versión horizontal y otra vertical de la misma grabación.
+date: 2026-11-22
+-->
+<p>Cuando grabás la pantalla con la cámara encima, tomás varias decisiones de edición sin darte cuenta: dónde va tu cara, de qué tamaño, durante cuánto tiempo y cómo se mezcla tu voz con el sonido de la computadora. Todo eso queda fijo dentro de un único video. Si después cambiás de idea, ya es tarde.</p>
+<p>Grabar en pistas separadas invierte el orden: primero grabás y después decidís. En esta nota repasamos qué cambia en la práctica cuando cada fuente queda en su propio archivo.</p>
+
+<h2>El problema del video “todo en uno”</h2>
+<p>La mayoría de los grabadores entregan un solo archivo con la cámara ya pegada sobre la pantalla y todo el audio mezclado. Es cómodo si vas a compartirlo tal cual, pero a la hora de editar aparecen los límites:</p>
+<ul>
+  <li>La cámara tapa una parte de la pantalla y no hay forma de ver qué había debajo.</li>
+  <li>Si recortás el video para otro formato, la cámara queda cortada o directamente afuera.</li>
+  <li>Si limpiás el ruido de la voz, el filtro también afecta la música o los sonidos de la aplicación.</li>
+  <li>Si sonó una notificación mientras hablabas, no se puede sacar sin llevarse tu voz.</li>
+</ul>
+
+<h2>Qué cambia con cada fuente en su archivo</h2>
+<p><a href="{{home}}">Dualrec</a> guarda cada grabación en cuatro archivos sincronizados: <code>screen.mp4</code>, <code>camera.mp4</code>, <code>mic.m4a</code> y <code>system.m4a</code>. Cada uno resuelve un problema distinto.</p>
+
+<h3>La cámara deja de estar pegada</h3>
+<p>Con la cámara en un archivo propio, la pantalla queda limpia y completa. En el editor podés:</p>
+<ul>
+  <li><strong>Moverla</strong> a otra esquina cuando tapa un menú o un botón.</li>
+  <li><strong>Cambiarle el tamaño</strong>: a pantalla completa cuando presentás el tema, chiquita cuando lo importante es lo que mostrás.</li>
+  <li><strong>Ocultarla</strong> en los tramos donde distrae, o directamente no usarla.</li>
+  <li><strong>Darle forma</strong>: recortarla en círculo, ponerle un borde o dividir el cuadro en dos mitades.</li>
+</ul>
+<p>Como la cámara se graba a resolución completa, agrandarla no la deja pixelada como pasaría con un recuadro recortado de un video ya armado.</p>
+
+<h3>La voz se puede limpiar sola</h3>
+<p>El audio suele ser lo que separa un video prolijo de uno casero. Con <code>mic.m4a</code> aparte podés aplicarle solo a la voz lo que la voz necesita: reducción de ruido, ecualización, compresión o simplemente más volumen. El audio del sistema queda intacto en su pista, y lo podés bajar, silenciar en un tramo o sacar del todo.</p>
+<p>Un detalle importante: para que la separación sea real conviene grabar con auriculares. Si el sonido de la computadora sale por parlantes, el micrófono también lo toma.</p>
+
+<h3>Horizontal y vertical de la misma grabación</h3>
+<p>Un video horizontal con la cámara en una esquina se adapta mal al formato vertical: al recortarlo, la cámara se pierde o queda diminuta. Con pistas separadas armás dos composiciones distintas con el mismo material: la horizontal para YouTube, con la cámara en una esquina, y la vertical para reels, Shorts o TikTok, con la pantalla arriba y tu cara abajo. Lo explicamos paso a paso en <a href="{{post:videos-verticales}}">cómo hacer videos verticales a partir de una grabación de pantalla</a>.</p>
+
+<h2>Un flujo de edición simple</h2>
+<p>No hace falta ser editor profesional para aprovecharlo. Un flujo que funciona en cualquier editor con varias pistas:</p>
+<ol>
+  <li>Importá los cuatro archivos de la carpeta de la grabación.</li>
+  <li>Ponelos al inicio de la línea de tiempo, cada uno en su pista. Como arrancan en el mismo instante y duran lo mismo, ya están alineados.</li>
+  <li>Vinculá o agrupá las cuatro pistas para que los cortes se apliquen a todas a la vez y no se desfasen.</li>
+  <li>Recortá los errores y los silencios largos.</li>
+  <li>Ubicá la cámara: tamaño, posición y en qué tramos se ve.</li>
+  <li>Ajustá el audio: primero la voz, después el volumen del sonido del sistema.</li>
+  <li>Exportá. Si necesitás otro formato, duplicá la línea de tiempo y reacomodá solo la imagen.</li>
+</ol>
+
+<h2>Qué tiene que cumplir la grabación</h2>
+<p>Las pistas separadas solo sirven si son fáciles de juntar. Hay tres cosas que conviene mirar:</p>
+<ul>
+  <li><strong>Mismo inicio y misma duración.</strong> Si cada archivo empieza en un momento distinto, hay que sincronizarlos a mano. En Dualrec todas las pistas comparten el mismo reloj.</li>
+  <li><strong>Pausas que no desfasan.</strong> Al pausar, las cuatro pistas saltan el mismo tramo y siguen alineadas al reanudar.</li>
+  <li><strong>Formatos comunes.</strong> Video H.264 en MP4 y audio AAC en M4A se abren en DaVinci Resolve, Premiere, CapCut y el resto de los editores habituales, sin convertir nada.</li>
+</ul>
+
+<h2>Cuándo no hace falta</h2>
+<p>Si solo querés mandarle a un compañero un video rápido que nadie va a editar, un archivo único alcanza y sobra. Las pistas separadas rinden cuando el video se va a publicar: tutoriales, cursos, demos de producto, clases o contenido para redes. Ahí cada minuto de edición que te ahorrás, y cada regrabación que evitás, cuenta.</p>
+<p>Si querés probarlo, en <a href="{{post:grabar-separado}}">cómo grabar pantalla y cámara por separado en Windows</a> está la guía completa, desde la instalación hasta el primer archivo.</p>
+
+<!-- faq -->
+<h3>¿Necesito un editor profesional para usar pistas separadas?</h3>
+<p>No. Sirve cualquier editor que permita varias pistas de video y de audio, como DaVinci Resolve, Premiere o CapCut.</p>
+<h3>¿Tengo que usar las cuatro pistas siempre?</h3>
+<p>No. Usás las que necesites: por ejemplo, solo la pantalla y el micrófono. Además, al grabar podés apagar las fuentes que no te interesan.</p>
+<h3>¿Qué pasa con la sincronía si pauso la grabación?</h3>
+<p>Nada: al pausar, las cuatro pistas saltan el mismo tramo, así que siguen alineadas cuando reanudás.</p>
+<h3>¿Hay que sincronizar los archivos a mano?</h3>
+<p>No. Todos arrancan en el mismo instante y duran lo mismo, así que alcanza con ponerlos al inicio de la línea de tiempo.</p>

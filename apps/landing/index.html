@@ -32,7 +32,7 @@
         "description": "Grabador de pantalla y cámara que guarda pantalla, cámara, micrófono y audio del sistema en archivos separados y sincronizados.",
         "applicationCategory": "MultimediaApplication",
         "operatingSystem": "Windows 10, Windows 11",
-        "softwareVersion": "0.1.1",
+        "softwareVersion": "0.1.2",
         "inLanguage": "es",
         "url": "https://dualrec.malkadigital.com/",
         "downloadUrl": "https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe",
@@ -100,6 +100,7 @@
       }
     </script>
     <!-- /solo-es -->
+    <link rel="alternate" type="application/rss+xml" title="Blog de Dualrec" href="blog/feed.xml" />
     <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
     <link rel="stylesheet" href="assets/site.css" />
   </head>
@@ -119,8 +120,10 @@
         </a>
         <a class="link" href="#pistas">Pistas</a>
         <a class="link" href="#funciones">Funciones</a>
+        <a class="link" href="#ia">IA</a>
         <a class="link" href="#proximamente">Lo que viene</a>
         <a class="link" href="#preguntas">Preguntas</a>
+        <a class="link" href="blog/">Blog</a>
         <a class="link" href="https://github.com/MalkSof/Dualrec">GitHub</a>
         <a class="link lang" href="en/" hreflang="en" lang="en">English</a>
       </nav>
@@ -259,6 +262,25 @@
         </div>
       </section>
 
+      <section id="ia" class="ai">
+        <p class="ai-tag">Nuevo en la versión 0.1.2</p>
+        <h2>Pedile el video a Claude</h2>
+        <p class="sub">Dualrec trae un conector MCP para Claude. Como cada fuente está en su archivo, la IA arma el video por vos: le escribís qué querés y exporta el MP4 en tu computadora.</p>
+        <div class="ai-grid">
+          <div class="ai-chat" aria-label="Ejemplo de pedido a Claude">
+            <p class="me">Hacé un reel vertical con la parte donde muestro el panel. Pantalla arriba, cámara abajo y sacá los silencios.</p>
+            <p class="bot">Listo: <code>reel.mp4</code>, 28 segundos, 1080 × 1920. Quedó en la carpeta <code>exports</code> de la grabación.</p>
+          </div>
+          <ul class="ai-list">
+            <li><b>Videos largos</b><span>Horizontal para YouTube, con la cámara en una burbuja o al costado y los silencios afuera.</span></li>
+            <li><b>Reels, Shorts y TikToks</b><span>Vertical, con la pantalla arriba y la cámara abajo, y zoom para que el texto se lea en el celular.</span></li>
+            <li><b>Título, subtítulos y audio</b><span>Título de gancho, subtítulos pegados y el volumen nivelado para redes.</span></li>
+            <li><b>Todo en tu computadora</b><span>Se conecta con un botón desde la app. Los videos no se suben a ningún lado.</span></li>
+          </ul>
+        </div>
+        <p class="fine"><a href="blog/editar-videos-con-claude-ia-mcp/">Cómo conectarlo y qué le podés pedir →</a></p>
+      </section>
+
       <section id="proximamente">
         <h2>Lo que viene</h2>
         <p class="sub">Dualrec empieza como grabador. El plan es que cada video se pueda compartir y consultar.</p>
@@ -371,6 +393,7 @@
 
       <footer>
         <span>Dualrec · hecho por <a href="https://malkadigital.com/">Malka Digital</a></span>
+        <a href="blog/">Blog</a>
         <a href="https://github.com/MalkSof/Dualrec">Código en GitHub</a>
         <a href="https://github.com/MalkSof/Dualrec/releases">Versiones</a>
       </footer>

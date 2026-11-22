@@ -1,0 +1,64 @@
+<!--
+slug: edit-videos-with-claude-ai-mcp
+title: Make videos and Reels with AI: Dualrec connected to Claude
+description: Dualrec ships with an MCP connector for Claude. Ask in plain words to cut the silences, put the camera in a bubble or build a vertical Reel, and it exports the MP4 on your computer.
+date: 2026-11-22
+-->
+<p>Recording is the easy part. What takes time is everything after: opening the editor, lining up the tracks, cutting the silences, building the vertical version. Starting with version 0.1.2, Dualrec includes a connector for Claude that does that work from a request written in plain words.</p>
+<p>It works because Dualrec saves the screen, the webcam, the microphone and the system audio as separate files. With the pieces apart, an assistant can decide where each one goes without having to take apart a video that is already mixed.</p>
+
+<h2>What the connector is</h2>
+<p>It is an MCP (Model Context Protocol) server, the standard assistants use to connect to apps. It is built into Dualrec: there is nothing extra to install and no new account to create. When Claude uses it, Dualrec gives it five tools:</p>
+<ul>
+  <li><strong>See your recordings</strong>: the list, the length and which tracks each one has.</li>
+  <li><strong>Detect where you speak</strong>: it analyzes the microphone and marks the speech and the silences.</li>
+  <li><strong>Look at the recording</strong>: it pulls still images of the screen and the camera at the seconds it needs, to know what is being shown.</li>
+  <li><strong>Export a video</strong>: it combines the tracks and saves a finished MP4.</li>
+  <li><strong>Check an export</strong> that is still running.</li>
+</ul>
+<p>Videos are built on your computer, with the same FFmpeg that Dualrec uses to record. The video files are not uploaded anywhere. What Claude does receive is what the tools return: the recording details and the still images it asks for.</p>
+
+<h2>How to connect it</h2>
+<h3>With Claude Desktop</h3>
+<ol>
+  <li>Install <a href="{{download}}">Dualrec 0.1.2 or later</a> and the Claude desktop app.</li>
+  <li>In Dualrec, open the <strong>Claude (IA)</strong> section and press <strong>Conectar con Claude Desktop</strong> (the app interface is in Spanish for now).</li>
+  <li>Quit Claude completely (from the system tray too) and open it again.</li>
+</ol>
+<h3>With Claude Code</h3>
+<p>In the same section, the <strong>Copiar comando para Claude Code</strong> button copies the command, ready to paste into your terminal.</p>
+
+<h2>What you can ask for</h2>
+<ul>
+  <li>"Make a horizontal video from my latest recording: cut the silences and keep the camera in a bubble at the bottom right."</li>
+  <li>"Make a 30-second vertical Reel from the part where I show the dashboard. Screen on top, camera below, zoomed in on the table."</li>
+  <li>"Export only the camera as a square video, from minute 2 to 3."</li>
+  <li>"Put this title at the top for the first seconds and these captions at these times."</li>
+</ul>
+
+<h2>The formats it builds</h2>
+<ul>
+  <li><strong>Horizontal</strong> (1920 × 1080) for YouTube, <strong>vertical</strong> (1080 × 1920) for Reels, Shorts and TikTok, and <strong>square</strong> (1080 × 1080).</li>
+  <li><strong>Bubble</strong>: the screen as the background and the camera in a circle or a bordered frame, in the corner you choose.</li>
+  <li><strong>Stacked</strong>: the screen on top and the camera below. This is the usual layout for vertical tutorials.</li>
+  <li><strong>Side by side</strong>, or <strong>screen only</strong> or <strong>camera only</strong>.</li>
+  <li><strong>Zoom on the screen</strong>, so text is readable on a phone.</li>
+  <li><strong>Cuts</strong>: the parts you want, joined in order, or all the silences removed.</li>
+  <li><strong>Title and captions</strong> burned into the video.</li>
+  <li><strong>Audio</strong>: separate volume for the voice and the system sound, with loudness leveled for social networks.</li>
+</ul>
+<p>Each video is saved in the recording's <code>exports</code> subfolder.</p>
+
+<h2>What it does not do yet</h2>
+<p>Claude cannot hear the audio. It knows <em>when</em> you speak, from the silences, and <em>what</em> is on screen, from the images, but not what you say. That is why captions are built from text you provide, and why it helps to say which part you care about ("where I show the dashboard", "from minute 2 to 3"). Automatic transcription is on the roadmap.</p>
+<p>To understand what makes this possible, read <a href="{{post:pistas-separadas}}">why recording separate tracks makes editing easier</a>. And if you would rather do it by hand, there is a guide to <a href="{{post:videos-verticales}}">building vertical videos in your editor</a>.</p>
+
+<!-- faq -->
+<h3>Do I need to pay to use the connector?</h3>
+<p>Dualrec and its connector are free. What you need is the Claude app (Claude Desktop or Claude Code) with your Claude account.</p>
+<h3>Are my videos uploaded to the internet?</h3>
+<p>No. Videos are exported on your computer and stay in the recording folder. Claude receives the recording details and the individual still images it asks for to see what is on screen.</p>
+<h3>Does it work with other assistants?</h3>
+<p>The connector uses the standard MCP protocol, so it should work with any compatible app that can run a local MCP server. It is tested with Claude.</p>
+<h3>Can it generate the captions by itself?</h3>
+<p>Not yet. Dualrec burns in the captions you give it, with their timings, but it does not transcribe the audio.</p>

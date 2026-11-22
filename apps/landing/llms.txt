@@ -1,0 +1,44 @@
+# Dualrec
+
+> Dualrec is a free, open-source screen and webcam recorder for Windows 10 and 11. One recording produces four separate, synced files: screen.mp4, camera.mp4, mic.m4a and system.m4a (H.264 video, AAC audio), so the camera and each audio source can be edited independently. No account, no watermark, no time limit; it records offline and the files stay on the user's computer.
+
+Key facts:
+
+- Platform: Windows 10 and 11. There is no Mac version yet (planned).
+- Price: free. Source code is public on GitHub.
+- Output: one folder per recording under `Videos\Dualrec`, with `screen.mp4` (a full screen or a single window), `camera.mp4` (webcam at full resolution), `mic.m4a` (microphone) and `system.m4a` (system audio). All tracks start at the same instant and have the same length, so they line up when placed at the start of an editor timeline.
+- Features: floating camera bubble that is left out of the screen recording, live preview of the selected screen, pause that keeps all tracks in sync, global shortcuts (Ctrl+Alt+R to start/stop, Ctrl+Alt+P to pause), hardware H.264 encoding on NVIDIA, Intel and AMD with a CPU fallback.
+- Each source (screen, camera, microphone, system audio) can be turned on or off independently.
+- The app interface is in Spanish for now. The website is available in Spanish and English.
+- The installer is about 30 MB and is not code-signed yet: Windows SmartScreen may ask the user to choose "More info" and then "Run anyway".
+- Files can be edited afterwards in any video editor (DaVinci Resolve, Premiere, CapCut, etc.).
+- AI editing (since 0.1.2): Dualrec includes a local MCP server for Claude (`dualrec.exe --mcp`, connected with one button from the app). Its tools list recordings, detect speech and silences, return still frames of screen and camera, and export finished MP4s on the user's computer: horizontal 1920x1080, vertical 1080x1920 or square, with picture-in-picture, stacked or side-by-side layouts, screen zoom, silence removal, a title and burned-in captions. It does not transcribe audio yet.
+- Made by Malka Digital, a custom software studio.
+
+## Main pages
+
+- [Dualrec (English)](https://dualrec.malkadigital.com/en/): product page with features, how it works and FAQ
+- [Dualrec (Español)](https://dualrec.malkadigital.com/): página del producto con funciones, cómo se usa y preguntas frecuentes
+- [Download for Windows](https://github.com/MalkSof/Dualrec/releases/latest/download/Dualrec-setup.exe): direct link to the latest installer
+- [Source code](https://github.com/MalkSof/Dualrec): GitHub repository
+- [Releases](https://github.com/MalkSof/Dualrec/releases): version history
+
+## Guides (English)
+
+- [How to record your screen and webcam as separate files on Windows](https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/): step-by-step setup and recording guide
+- [Why recording separate tracks makes editing easier](https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/): moving or hiding the camera, cleaning up the voice, horizontal and vertical versions
+- [How to make vertical Shorts, Reels and TikToks from a screen recording](https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/): building 9:16 videos from separate screen and camera files
+- [Make videos and Reels with AI: Dualrec connected to Claude](https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/): the MCP connector, how to connect it and what to ask for
+- [Blog index](https://dualrec.malkadigital.com/en/blog/) and [RSS feed](https://dualrec.malkadigital.com/en/blog/feed.xml)
+
+## Guías (Español)
+
+- [Cómo grabar pantalla y cámara por separado en Windows](https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/): guía paso a paso
+- [Por qué grabar en pistas separadas mejora la edición](https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/): mover u ocultar la cámara, limpiar la voz, versión horizontal y vertical
+- [Cómo hacer reels, Shorts y TikToks verticales desde una grabación de pantalla](https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/): armar videos 9:16 con la pantalla y la cámara en archivos separados
+- [Cómo armar videos y reels con IA: Dualrec conectado a Claude](https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/): el conector MCP, cómo conectarlo y qué pedirle
+- [Índice del blog](https://dualrec.malkadigital.com/blog/) y [feed RSS](https://dualrec.malkadigital.com/blog/feed.xml)
+
+## Optional
+
+- [Malka Digital](https://malkadigital.com/): the studio that builds Dualrec

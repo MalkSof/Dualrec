@@ -1,0 +1,67 @@
+<!--
+slug: grabar-pantalla-y-camara-por-separado-windows
+title: Cómo grabar pantalla y cámara por separado en Windows
+description: Guía paso a paso para grabar la pantalla y la cámara web en archivos separados y sincronizados en Windows 10 y 11, gratis, sin cuenta y sin configurar escenas.
+date: 2026-11-22
+-->
+<p>Si alguna vez grabaste un tutorial con tu cara en una esquina, conocés el problema: al terminar tenés un solo video y la cámara quedó pegada donde estaba. Si tapa un botón, si querías verte en grande durante la presentación o si necesitás una versión vertical para redes, no queda mucho por hacer salvo grabar de nuevo.</p>
+<p>La solución es grabar cada cosa en su propio archivo: la pantalla por un lado, la cámara por el otro y el audio aparte. En esta guía vas a ver cómo hacerlo en Windows 10 y 11 con <a href="{{home}}">Dualrec</a>, un grabador gratuito y de código abierto pensado exactamente para eso.</p>
+
+<h2>Qué significa grabar “por separado”</h2>
+<p>La mayoría de los grabadores de pantalla entregan un único video con la cámara ya superpuesta. Grabar por separado es otra cosa: cuando cortás, tenés varios archivos que empezaron en el mismo instante y duran lo mismo. Con Dualrec son cuatro:</p>
+<ul>
+  <li><code>screen.mp4</code>: la pantalla entera o una sola ventana.</li>
+  <li><code>camera.mp4</code>: tu cámara, a resolución completa.</li>
+  <li><code>mic.m4a</code>: tu voz.</li>
+  <li><code>system.m4a</code>: lo que suena en la computadora.</li>
+</ul>
+<p>Los videos están en H.264 y los audios en AAC, dos formatos que abre cualquier editor. Como comparten el mismo punto de partida, no hace falta sincronizar nada a mano.</p>
+
+<h2>Qué opciones hay en Windows</h2>
+<p>Antes de ir a los pasos, vale la pena ubicar las herramientas más conocidas:</p>
+<ul>
+  <li><strong>OBS</strong> es gratuito, de código abierto y muy potente, pero está pensado para transmitir y componer: hay que configurar escenas y fuentes antes de grabar.</li>
+  <li><strong>Loom</strong> está orientado a la nube: pide una cuenta y su punto fuerte es compartir un link rápido, no entregarte material para editar.</li>
+  <li><strong>Dualrec</strong> hace una sola cosa: graba cada fuente en su archivo, en tu computadora, sin cuenta y sin escenas que armar.</li>
+</ul>
+<p>Si lo que buscás es editar después con libertad, el tercer camino es el más corto.</p>
+
+<h2>Paso a paso con Dualrec</h2>
+<ol>
+  <li><strong>Descargá e instalá.</strong> Bajá el <a href="{{download}}">instalador para Windows</a> (unos 30 MB). Todavía no está firmado, así que Windows puede mostrar el aviso de SmartScreen: elegí “Más información” y después “Ejecutar de todas formas”.</li>
+  <li><strong>Elegí qué pantalla grabar.</strong> Puede ser una pantalla entera o una sola ventana. La vista previa en vivo te muestra lo que se va a grabar, así confirmás que elegiste bien antes de empezar.</li>
+  <li><strong>Prendé las fuentes que necesites.</strong> Cámara, micrófono y audio del sistema se prenden o se apagan por separado. Si no querés grabar el sonido de la computadora, lo dejás apagado y listo.</li>
+  <li><strong>Acomodá la burbuja de cámara.</strong> Es una ventanita flotante para verte mientras grabás. Arrastrala a donde no moleste: no sale en <code>screen.mp4</code>, así que no importa si tapa algo.</li>
+  <li><strong>Apretá Grabar.</strong> O usá el atajo <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd>, que funciona desde cualquier programa.</li>
+  <li><strong>Pausá si hace falta.</strong> Con <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>P</kbd> pausás y reanudás. Las cuatro pistas saltan el mismo tramo, así que siguen alineadas.</li>
+  <li><strong>Cortá y abrí la carpeta.</strong> Volvé a apretar <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> o el botón Cortar. Los archivos quedan en <code>Videos\Dualrec</code>, en una carpeta por grabación.</li>
+</ol>
+<p>No hay cuenta que crear, ni marca de agua, ni límite de tiempo, y no hace falta conexión a internet para grabar.</p>
+
+<h2>Cómo usar los archivos en el editor</h2>
+<p>Abrí tu editor de video (DaVinci Resolve, Premiere, CapCut o el que uses), importá los cuatro archivos y ponelos al inicio de la línea de tiempo, cada uno en su pista. Ya están alineados. A partir de ahí:</p>
+<ul>
+  <li>Achicá el video de la cámara y ubicalo en la esquina que quieras, o dejalo a pantalla completa en la presentación.</li>
+  <li>Ocultá la cámara en los tramos donde tapa algo importante.</li>
+  <li>Subí o limpiá la voz sin tocar el sonido de la computadora.</li>
+</ul>
+<p>En <a href="{{post:pistas-separadas}}">por qué grabar en pistas separadas mejora la edición</a> contamos en detalle qué se gana, y en <a href="{{post:videos-verticales}}">cómo hacer videos verticales desde una grabación de pantalla</a> está el paso a paso para sacar reels y Shorts del mismo material.</p>
+
+<h2>Consejos para que salga bien a la primera</h2>
+<ul>
+  <li><strong>Hacé una prueba corta.</strong> Grabá diez segundos, abrí la carpeta y revisá que se vea la pantalla correcta y que el micrófono se escuche bien.</li>
+  <li><strong>Grabá una ventana si no necesitás todo el escritorio.</strong> Así no aparecen otras aplicaciones ni la barra de tareas.</li>
+  <li><strong>Usá auriculares.</strong> Si el sonido de la computadora sale por los parlantes, el micrófono también lo toma y las dos pistas de audio dejan de estar realmente separadas.</li>
+  <li><strong>Cuidá la luz.</strong> Una ventana o una lámpara de frente mejora la imagen de cualquier cámara web más que cambiar la configuración.</li>
+  <li><strong>Usá los atajos.</strong> Empezar y cortar con el teclado te ahorra recortar al editar el momento en que vas a buscar el botón.</li>
+</ul>
+
+<!-- faq -->
+<h3>¿Puedo grabar solo la pantalla, sin cámara?</h3>
+<p>Sí. Cada fuente se prende o se apaga por separado: podés grabar solo la pantalla, la pantalla con el micrófono o cualquier otra combinación.</p>
+<h3>¿Los archivos quedan sincronizados?</h3>
+<p>Sí. Todas las pistas arrancan en el mismo instante y duran lo mismo. En el editor alcanza con ponerlas al inicio de la línea de tiempo.</p>
+<h3>¿Dualrec tiene marca de agua o límite de tiempo?</h3>
+<p>No. Es gratis, no pide cuenta, no agrega marca de agua y no limita la duración de la grabación.</p>
+<h3>¿Funciona en Mac?</h3>
+<p>Por ahora no: Dualrec funciona en Windows 10 y 11. La versión para Mac está planeada.</p>

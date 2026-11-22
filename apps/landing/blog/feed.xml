@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blog de Dualrec</title>
+    <link>https://dualrec.malkadigital.com/blog/</link>
+    <description>Guías y consejos para grabar la pantalla y la cámara en Windows, editar con pistas separadas y sacar videos horizontales y verticales de una misma grabación.</description>
+    <language>es-AR</language>
+    <lastBuildDate>Sun, 22 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <atom:link href="https://dualrec.malkadigital.com/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cómo armar videos y reels con IA: Dualrec conectado a Claude</title>
+      <link>https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Dualrec trae un conector MCP para Claude. Pedile en palabras que saque los silencios, ponga la cámara en una burbuja o arme un reel vertical, y exporta el MP4 en tu computadora.</description>
+    </item>
+    <item>
+      <title>Cómo grabar pantalla y cámara por separado en Windows</title>
+      <link>https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/blog/grabar-pantalla-y-camara-por-separado-windows/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Guía paso a paso para grabar la pantalla y la cámara web en archivos separados y sincronizados en Windows 10 y 11, gratis, sin cuenta y sin configurar escenas.</description>
+    </item>
+    <item>
+      <title>Por qué grabar en pistas separadas mejora la edición</title>
+      <link>https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/blog/por-que-grabar-en-pistas-separadas/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Con la pantalla, la cámara y el audio en archivos separados podés mover u ocultar la cámara, limpiar solo la voz y sacar una versión horizontal y otra vertical de la misma grabación.</description>
+    </item>
+    <item>
+      <title>Cómo hacer reels, Shorts y TikToks verticales desde una grabación de pantalla</title>
+      <link>https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/blog/reels-shorts-tiktok-desde-grabacion-de-pantalla/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Paso a paso para convertir una grabación de pantalla horizontal en videos verticales para reels, YouTube Shorts y TikTok, aprovechando que la cámara está en su propio archivo.</description>
+    </item>
+  </channel>
+</rss>

@@ -9,6 +9,7 @@ mod ffmpeg;
 mod preview;
 mod recorder;
 mod screen;
+mod mcp;
 mod screen_preview;
 
 use audio::{AudioCapture, AudioSource};
@@ -425,6 +426,19 @@ fn open_folder(path: String) -> CmdResult<()> {
         .map_err(err)
 }
 
+/// Estado de la conexión con Claude (Desktop y Code) para la carpeta de grabaciones.
+#[tauri::command(async)]
+fn claude_status(dir: String) -> serde_json::Value {
+    mcp::claude_status(&dir)
+}
+
+/// Agrega Dualrec como conector en Claude Desktop.
+#[tauri::command(async)]
+fn claude_connect(dir: String) -> CmdResult<serde_json::Value> {
+    mcp::claude_connect(&dir)?;
+    Ok(mcp::claude_status(&dir))
+}
+
 /// Muestra u oculta la burbuja flotante de la cámara.
 #[tauri::command]
 fn set_bubble(app: tauri::AppHandle, visible: bool) -> CmdResult<()> {
@@ -603,6 +617,11 @@ fn main() {
         camera::print_diagnostics();
         return;
     }
+    if let Some(i) = args.iter().position(|a| a == "--mcp") {
+        // Servidor MCP por stdio para asistentes (Claude). Carpeta opcional: --mcp <carpeta>.
+        let dir = args.get(i + 1).map(PathBuf::from).unwrap_or_else(default_dir);
+        std::process::exit(mcp::run(dir));
+    }
     if let Some(i) = args.iter().position(|a| a == "--resume-uploads") {
         std::process::exit(resume_cli(args.get(i + 1)));
     }
@@ -676,6 +695,8 @@ fn main() {
             list_recordings,
             open_folder,
             copy_text,
+            claude_status,
+            claude_connect,
             cloud_check,
             cloud_defaults,
             resume_uploads,

@@ -909,3 +909,25 @@ kbd {
 .bad {
   color: var(--rec-2);
 }
+
+/* ---------- Claude ---------- */
+
+.about {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.fields .test {
+  flex-wrap: wrap;
+}
+
+.fields small.muted {
+  color: var(--muted);
+}
+
+.fields code {
+  font-family: Consolas, monospace;
+  color: var(--text);
+}

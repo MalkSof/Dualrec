@@ -1,0 +1,71 @@
+<!--
+slug: why-record-separate-tracks
+title: Why recording separate tracks makes editing easier
+description: With your screen, webcam and audio in separate files you can move or hide the camera, clean up just your voice, and cut a horizontal and a vertical version from one recording.
+date: 2026-11-22
+-->
+<p>When you record your screen with the webcam on top, you make a handful of editing decisions without noticing: where your face goes, how big it is, how long it stays, and how your voice is mixed with the computer sound. All of it gets locked into a single video. Change your mind later and it is too late.</p>
+<p>Recording separate tracks flips the order: record first, decide afterwards. Here is what actually changes when every source lands in its own file.</p>
+
+<h2>The trouble with an all-in-one video</h2>
+<p>Most recorders give you one file with the camera already burned onto the screen and all the audio mixed together. That is convenient if you are going to share it as is, but the limits show up as soon as you start editing:</p>
+<ul>
+  <li>The camera covers part of the screen, and there is no way to see what was underneath.</li>
+  <li>Crop the video for another format and the camera gets cut off, or disappears entirely.</li>
+  <li>Run noise reduction on your voice and the filter also changes the music or the app sounds.</li>
+  <li>If a notification chimed while you were talking, you cannot remove it without losing your voice too.</li>
+</ul>
+
+<h2>What you get when each source has its own file</h2>
+<p><a href="{{home}}">Dualrec</a> saves every recording as four synced files: <code>screen.mp4</code>, <code>camera.mp4</code>, <code>mic.m4a</code> and <code>system.m4a</code>. Each one solves a different problem.</p>
+
+<h3>The camera is no longer stuck in place</h3>
+<p>With the webcam in its own file, the screen recording stays clean and complete. In the editor you can:</p>
+<ul>
+  <li><strong>Move it</strong> to another corner when it covers a menu or a button.</li>
+  <li><strong>Resize it</strong>: full screen while you introduce the topic, small when what you are showing matters more.</li>
+  <li><strong>Hide it</strong> where it is distracting, or leave it out altogether.</li>
+  <li><strong>Shape it</strong>: crop it to a circle, add a border, or split the frame in two halves.</li>
+</ul>
+<p>Because the camera is recorded at full resolution, scaling it up does not turn it into a blurry blob, which is what happens when you enlarge a small overlay from a finished video.</p>
+
+<h3>Your voice can be cleaned up on its own</h3>
+<p>Audio is often what separates a polished video from a homemade one. With <code>mic.m4a</code> on its own track, you can give your voice exactly what a voice needs: noise reduction, EQ, compression, or simply more volume. The system audio sits untouched on its own track, where you can lower it, mute a section or drop it completely.</p>
+<p>One practical note: for the separation to be real, record with headphones. If the computer sound comes out of speakers, your microphone will pick it up as well.</p>
+
+<h3>Horizontal and vertical from the same recording</h3>
+<p>A landscape video with the camera in a corner does not adapt well to a vertical frame: crop it and the camera is either lost or tiny. With separate tracks you build two different layouts from the same footage: a horizontal one for YouTube, with the camera in a corner, and a vertical one for Shorts, Reels or TikTok, with the screen on top and your face below. We cover that step by step in <a href="{{post:videos-verticales}}">how to make vertical videos from a screen recording</a>.</p>
+
+<h2>A simple editing workflow</h2>
+<p>You do not need to be a professional editor to benefit. This workflow works in any editor with multiple tracks:</p>
+<ol>
+  <li>Import the four files from the recording folder.</li>
+  <li>Drop them at the start of the timeline, each on its own track. They start at the same instant and have the same length, so they are already aligned.</li>
+  <li>Link or group the four tracks so that every cut applies to all of them and nothing drifts.</li>
+  <li>Trim the mistakes and the long silences.</li>
+  <li>Place the camera: size, position, and where it is visible.</li>
+  <li>Fix the audio: your voice first, then the level of the system sound.</li>
+  <li>Export. If you need another format, duplicate the timeline and rearrange only the picture.</li>
+</ol>
+
+<h2>What the recording has to get right</h2>
+<p>Separate tracks are only useful if they are easy to put back together. Three things are worth checking:</p>
+<ul>
+  <li><strong>Same start, same length.</strong> If every file begins at a different moment, you have to sync them by hand. In Dualrec all tracks share one clock.</li>
+  <li><strong>Pauses that do not break sync.</strong> When you pause, all four tracks skip the same stretch and are still aligned when you resume.</li>
+  <li><strong>Common formats.</strong> H.264 video in MP4 and AAC audio in M4A open in DaVinci Resolve, Premiere, CapCut and every other common editor, with nothing to convert.</li>
+</ul>
+
+<h2>When you do not need it</h2>
+<p>If you just want to send a teammate a quick video that nobody will edit, a single file is plenty. Separate tracks pay off when the video is going to be published: tutorials, courses, product demos, lessons or social content. That is where every minute of editing you save, and every re-recording you avoid, counts.</p>
+<p>Want to try it? <a href="{{post:grabar-separado}}">How to record your screen and webcam as separate files on Windows</a> is the full guide, from installing the app to your first file.</p>
+
+<!-- faq -->
+<h3>Do I need a professional editor to use separate tracks?</h3>
+<p>No. Any editor that supports multiple video and audio tracks will do, such as DaVinci Resolve, Premiere or CapCut.</p>
+<h3>Do I always have to use all four tracks?</h3>
+<p>No. Use the ones you need, for example just the screen and the microphone. You can also turn off the sources you do not want before recording.</p>
+<h3>What happens to sync if I pause the recording?</h3>
+<p>Nothing. When you pause, all four tracks skip the same stretch, so they are still aligned when you resume.</p>
+<h3>Do I have to sync the files by hand?</h3>
+<p>No. They all start at the same instant and have the same length, so placing them at the start of the timeline is enough.</p>

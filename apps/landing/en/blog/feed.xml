@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dualrec blog</title>
+    <link>https://dualrec.malkadigital.com/en/blog/</link>
+    <description>Guides and tips for recording your screen and webcam on Windows, editing with separate tracks and getting horizontal and vertical videos out of one recording.</description>
+    <language>en</language>
+    <lastBuildDate>Sun, 22 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <atom:link href="https://dualrec.malkadigital.com/en/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Make videos and Reels with AI: Dualrec connected to Claude</title>
+      <link>https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Dualrec ships with an MCP connector for Claude. Ask in plain words to cut the silences, put the camera in a bubble or build a vertical Reel, and it exports the MP4 on your computer.</description>
+    </item>
+    <item>
+      <title>How to record your screen and webcam as separate files on Windows</title>
+      <link>https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/en/blog/record-screen-and-webcam-separately-windows/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>A step-by-step guide to recording your screen and webcam as separate, synced files on Windows 10 and 11. Free, with no account and no scenes to set up.</description>
+    </item>
+    <item>
+      <title>Why recording separate tracks makes editing easier</title>
+      <link>https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/en/blog/why-record-separate-tracks/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>With your screen, webcam and audio in separate files you can move or hide the camera, clean up just your voice, and cut a horizontal and a vertical version from one recording.</description>
+    </item>
+    <item>
+      <title>How to make vertical Shorts, Reels and TikToks from a screen recording</title>
+      <link>https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/en/blog/vertical-shorts-reels-tiktok-from-screen-recording/</guid>
+      <pubDate>Sun, 22 Nov 2026 12:00:00 +0000</pubDate>
+      <description>A step-by-step way to turn a landscape screen recording into vertical videos for YouTube Shorts, Instagram Reels and TikTok, using a webcam that was recorded to its own file.</description>
+    </item>
+  </channel>
+</rss>
