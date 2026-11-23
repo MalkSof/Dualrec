@@ -1,5 +1,7 @@
 // Renderiza reel.html cuadro por cuadro con Chrome y lo une con audio.wav.
-// Uso: node render.mjs [segundo]   (con un segundo, guarda solo esa captura en frames/)
+// Uso: node render.mjs [pagina.html] [segundo...]
+//   pagina.html: por defecto reel.html; claude.html arma dualrec-claude-reel.mp4
+//   con segundos, guarda solo esas capturas en frames/
 import puppeteer from 'puppeteer-core';
 import { spawn } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -14,21 +16,24 @@ const chrome = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application
 const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: ['--hide-scrollbars', '--force-device-scale-factor=1'] });
 const page = await browser.newPage();
 await page.setViewport({ width: 1080, height: 1920, deviceScaleFactor: 1 });
-await page.goto(pathToFileURL(path.join(here, 'reel.html')).href);
+const argv = process.argv.slice(2);
+const src = argv[0]?.endsWith('.html') ? argv.shift() : 'reel.html';
+const name = path.basename(src, '.html');
+await page.goto(pathToFileURL(path.join(here, src)).href);
 await page.evaluate(() => document.fonts.ready);
 
-const stills = process.argv.slice(2).map(Number);
+const stills = argv.map(Number);
 if (stills.length) {
   fs.mkdirSync(path.join(here, 'frames'), { recursive: true });
   for (const t of stills) {
     await page.evaluate(t => window.renderAt(t), t);
-    await page.screenshot({ path: path.join(here, 'frames', `t${t.toFixed(2)}.jpg`), type: 'jpeg', quality: 80 });
+    await page.screenshot({ path: path.join(here, 'frames', `${name}-t${t.toFixed(2)}.jpg`), type: 'jpeg', quality: 80 });
   }
   await browser.close();
   process.exit(0);
 }
 
-const out = path.join(here, 'dualrec-reel.mp4');
+const out = path.join(here, name === 'reel' ? 'dualrec-reel.mp4' : `dualrec-${name}-reel.mp4`);
 const ff = spawn(ffmpeg, ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
   '-i', path.join(here, 'audio.wav'), '-c:v', 'libx264', '-preset', 'slow', '-crf', '17', '-pix_fmt', 'yuv420p',
   '-color_primaries', 'bt709', '-color_trc', 'bt709', '-colorspace', 'bt709',
