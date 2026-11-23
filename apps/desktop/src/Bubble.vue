@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
 import { api } from "./api";
+import { t } from "./i18n";
 
 // Burbuja flotante: se arrastra con el mouse y cambia de tamaño con doble clic.
 const SIZES = [160, 220, 300];
@@ -24,7 +25,7 @@ function cycleSize() {
 
 <template>
   <div class="bubble-wrap">
-    <div class="bubble-cam" title="Arrastrá para mover · doble clic para cambiar el tamaño">
+    <div class="bubble-cam" :title="t('bubbleTitle')">
       <img v-if="url" :src="url" alt="" />
       <div class="drag" @mousedown="drag" @dblclick="cycleSize" />
     </div>

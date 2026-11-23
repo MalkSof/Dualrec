@@ -15,6 +15,7 @@ import {
   type Status,
   type Track,
 } from "./api";
+import { lang, locale, native, t } from "./i18n";
 
 const STORE_KEY = "dualrec.settings.v1";
 
@@ -105,17 +106,17 @@ const cloudLabel = computed(() => {
   const pct = c.total_bytes ? Math.round((c.uploaded_bytes / c.total_bytes) * 100) : 0;
   switch (c.state) {
     case "connecting":
-      return "Conectando con la nube…";
+      return t("cloudConnecting");
     case "uploading":
-      return recording.value ? `Subiendo · ${formatSize(c.uploaded_bytes)}` : `Subiendo · ${pct}%`;
+      return t("cloudUploading", { progress: recording.value ? formatSize(c.uploaded_bytes) : `${pct}%` });
     case "offline":
-      return "Sin conexión · se retoma sola";
+      return t("cloudOffline");
     case "finishing":
-      return "Terminando la subida…";
+      return t("cloudFinishing");
     case "done":
-      return "En la nube";
+      return t("cloudDone");
     default:
-      return c.error ?? "No se pudo subir";
+      return c.error ? native(c.error) : t("cloudFailed");
   }
 });
 
@@ -124,7 +125,7 @@ async function testCloud() {
   cloudTesting.value = true;
   try {
     const name = await api.cloudCheck({ api_url: settings.apiUrl.trim(), token: settings.apiToken.trim() });
-    cloudTest.value = { ok: true, text: `Conectado como ${name}` };
+    cloudTest.value = { ok: true, text: name };
   } catch (e) {
     cloudTest.value = { ok: false, text: String(e) };
   } finally {
@@ -142,7 +143,7 @@ async function connectClaude() {
   claudeBusy.value = true;
   try {
     claude.value = await api.claudeConnect(settings.outDir);
-    claudeNote.value = { ok: true, text: "Listo. Cerrá Claude del todo (también desde la bandeja) y volvé a abrirlo." };
+    claudeNote.value = { ok: true, text: "" };
   } catch (e) {
     claudeNote.value = { ok: false, text: String(e) };
   } finally {
@@ -194,20 +195,21 @@ watch(
 
 const stageTitle = computed(() => {
   const d = devices.value;
-  if (!d) return { title: "Buscando dispositivos…", sub: "" };
+  if (!d) return { title: t("searchingDevices"), sub: "" };
   if (settings.screenMode === "monitor") {
     const m = d.monitors.find((x) => x.index === settings.monitorIndex);
     return m
-      ? { title: m.name, sub: `${m.width} × ${m.height} · ${m.refresh_rate} Hz` }
-      : { title: "Sin pantalla", sub: "" };
+      ? { title: native(m.name), sub: `${m.width} × ${m.height} · ${m.refresh_rate} Hz` }
+      : { title: t("noScreen"), sub: "" };
   }
   if (settings.screenMode === "window") {
     const w = d.windows.find((x) => x.hwnd === settings.windowHwnd);
-    return w ? { title: w.title, sub: w.process } : { title: "Elegí una ventana", sub: "" };
+    return w ? { title: w.title, sub: w.process } : { title: t("pickWindow"), sub: "" };
   }
-  return { title: "Sin pantalla", sub: "Solo cámara y audio" };
+  return { title: t("noScreen"), sub: t("onlyCamAudio") };
 });
 
+// Los avisos se guardan en español y se traducen al mostrarlos (ver `native`).
 function fail(e: unknown) {
   error.value = typeof e === "string" ? e : e instanceof Error ? e.message : String(e);
 }
@@ -343,20 +345,22 @@ async function pickFolder() {
   if (typeof dir === "string") settings.outDir = dir;
 }
 
-function trackLabel(t: Track): string {
-  if (t.width) return `${t.width}×${t.height} · ${t.fps} fps`;
-  return `${(t.sample_rate ?? 0) / 1000} kHz · ${t.channels === 1 ? "mono" : "estéreo"}`;
+function trackLabel(tr: Track): string {
+  if (tr.width) return `${tr.width}×${tr.height} · ${tr.fps} fps`;
+  return `${(tr.sample_rate ?? 0) / 1000} kHz · ${tr.channels === 1 ? "mono" : t("stereo")}`;
 }
 
 function recentTitle(m: Manifest): string {
   const d = new Date(m.recorded_at);
   return Number.isNaN(d.getTime())
     ? m.id
-    : d.toLocaleString("es-AR", { dateStyle: "medium", timeStyle: "short" });
+    : d.toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short" });
 }
 
+const QUALITY = { alta: "qualityHigh", media: "qualityMedium", baja: "qualityLow" } as const;
+
 function totalSize(m: Manifest): number {
-  return m.tracks.reduce((a, t) => a + t.size_bytes, 0);
+  return m.tracks.reduce((a, tr) => a + tr.size_bytes, 0);
 }
 
 watch(() => [settings.cameraOn, settings.cameraIndex], applyCamera);
@@ -426,7 +430,7 @@ onBeforeUnmount(() => {
       </svg>
       <div class="brand">
         Dualrec
-        <small>Pantalla y cámara, en pistas separadas</small>
+        <small>{{ t("tagline") }}</small>
       </div>
       <span v-if="encoder" class="chip" :class="{ hw: encoder.includes('hardware') }" :title="`Encoder H.264: ${encoder}`">
         {{ encoder.replace(" (hardware)", "") }}
@@ -441,7 +445,7 @@ onBeforeUnmount(() => {
           :key="screenKey"
           class="stage-shot"
           :src="`${devices.screen_preview_url}?k=${screenKey}`"
-          alt="Vista previa de la pantalla"
+          :alt="t('screenPreviewAlt')"
           @load="screenLive = true"
           @error="screenLive = false"
         />
@@ -455,26 +459,26 @@ onBeforeUnmount(() => {
           <span v-if="stageTitle.sub">{{ stageTitle.sub }}</span>
         </div>
         <div v-if="cameraLive && devices" class="stage-cam" :class="{ solo: settings.screenMode === 'none' }">
-          <img :src="devices.preview_url" alt="Vista previa de la cámara" />
+          <img :src="devices.preview_url" :alt="t('cameraPreviewAlt')" />
         </div>
         <div v-if="recording" class="rec-pill">
           <span class="dot" :class="{ paused: status.paused }" />
-          {{ status.paused ? "PAUSA" : "REC" }} {{ formatClock(status.elapsed_ms) }}
+          {{ status.paused ? t("paused") : "REC" }} {{ formatClock(status.elapsed_ms) }}
         </div>
         <div v-if="recording && cloud" class="cloud-pill" :class="cloud.state">{{ cloudLabel }}</div>
       </section>
 
       <section v-if="last" class="card">
         <div class="result-head">
-          <b><span class="ok">✓</span> Grabación guardada · {{ formatClock(last.duration_ms) }}</b>
-          <button class="ghost" @click="api.openFolder(last.dir)">Abrir carpeta</button>
+          <b><span class="ok">✓</span> {{ t("saved") }} · {{ formatClock(last.duration_ms) }}</b>
+          <button class="ghost" @click="api.openFolder(last.dir)">{{ t("openFolder") }}</button>
         </div>
-        <div v-for="t in last.tracks" :key="t.file" class="track" :class="{ bad: t.error }">
-          <svg v-if="t.width" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m10 9.5 4.5 2.5-4.5 2.5v-5Z" fill="currentColor" /></svg>
+        <div v-for="tr in last.tracks" :key="tr.file" class="track" :class="{ bad: tr.error }">
+          <svg v-if="tr.width" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m10 9.5 4.5 2.5-4.5 2.5v-5Z" fill="currentColor" /></svg>
           <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10.5v3" /></svg>
-          <code>{{ t.file }}</code>
-          <small>{{ trackLabel(t) }} · {{ formatSize(t.size_bytes) }}</small>
-          <div v-if="t.error" class="err">{{ t.error }}</div>
+          <code>{{ tr.file }}</code>
+          <small>{{ trackLabel(tr) }} · {{ formatSize(tr.size_bytes) }}</small>
+          <div v-if="tr.error" class="err">{{ native(tr.error) }}</div>
         </div>
         <div v-if="cloud" class="cloud-row" :class="cloud.state">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4.5 4.5 0 0 1-.6-8.96 6 6 0 0 1 11.66 1.5A3.75 3.75 0 0 1 17.5 18H7Z" /></svg>
@@ -482,7 +486,7 @@ onBeforeUnmount(() => {
             {{ cloudLabel }}
             <small v-if="cloud.share_url" :title="cloud.share_url">{{ cloud.share_url }}</small>
           </span>
-          <button v-if="cloud.share_url" class="ghost" @click="copyLink(cloud.share_url)">{{ linkCopied ? "¡Copiado!" : "Copiar link" }}</button>
+          <button v-if="cloud.share_url" class="ghost" @click="copyLink(cloud.share_url)">{{ linkCopied ? t("copied") : t("copyLink") }}</button>
         </div>
         <div class="card-foot" />
       </section>
@@ -495,22 +499,22 @@ onBeforeUnmount(() => {
               <path d="M8.5 20.5h7M12 17v3.5" />
             </svg>
           </div>
-          <div class="label">Pantalla <small>screen.mp4</small></div>
+          <div class="label">{{ t("screen") }} <small>screen.mp4</small></div>
           <div class="seg" role="tablist">
-            <button :class="{ active: settings.screenMode === 'monitor' }" :disabled="recording" @click="settings.screenMode = 'monitor'">Pantalla</button>
-            <button :class="{ active: settings.screenMode === 'window' }" :disabled="recording" @click="settings.screenMode = 'window'; refreshDevices()">Ventana</button>
-            <button :class="{ active: settings.screenMode === 'none' }" :disabled="recording" @click="settings.screenMode = 'none'">No</button>
+            <button :class="{ active: settings.screenMode === 'monitor' }" :disabled="recording" @click="settings.screenMode = 'monitor'">{{ t("screen") }}</button>
+            <button :class="{ active: settings.screenMode === 'window' }" :disabled="recording" @click="settings.screenMode = 'window'; refreshDevices()">{{ t("window") }}</button>
+            <button :class="{ active: settings.screenMode === 'none' }" :disabled="recording" @click="settings.screenMode = 'none'">{{ t("no") }}</button>
           </div>
           <div v-if="settings.screenMode === 'monitor'" class="wide">
-            <select v-model.number="settings.monitorIndex" :disabled="recording" aria-label="Pantalla a grabar">
+            <select v-model.number="settings.monitorIndex" :disabled="recording" :aria-label="t('screenToRecord')">
               <option v-for="m in devices?.monitors ?? []" :key="m.index" :value="m.index">
-                {{ m.name }} — {{ m.width }}×{{ m.height }}{{ m.primary ? " (principal)" : "" }}
+                {{ native(m.name) }} — {{ m.width }}×{{ m.height }}{{ m.primary ? t("primary") : "" }}
               </option>
             </select>
           </div>
           <div v-else-if="settings.screenMode === 'window'" class="wide">
-            <select v-model.number="settings.windowHwnd" :disabled="recording" aria-label="Ventana a grabar" @focus="refreshDevices">
-              <option v-if="!devices?.windows.length" :value="0">No hay ventanas abiertas</option>
+            <select v-model.number="settings.windowHwnd" :disabled="recording" :aria-label="t('windowToRecord')" @focus="refreshDevices">
+              <option v-if="!devices?.windows.length" :value="0">{{ t("noWindows") }}</option>
               <option v-for="w in devices?.windows ?? []" :key="w.hwnd" :value="w.hwnd">
                 {{ w.title }}{{ w.process ? ` — ${w.process}` : "" }}
               </option>
@@ -526,14 +530,14 @@ onBeforeUnmount(() => {
             </svg>
           </div>
           <div class="label">
-            Cámara
-            <small>{{ cameraBusy ? "Abriendo cámara…" : camera ? `camera.mp4 · ${camera.width}×${camera.height}` : "camera.mp4" }}</small>
+            {{ t("camera") }}
+            <small>{{ cameraBusy ? t("openingCamera") : camera ? `camera.mp4 · ${camera.width}×${camera.height}` : "camera.mp4" }}</small>
           </div>
-          <button class="switch" role="switch" :aria-checked="settings.cameraOn" :disabled="recording || cameraBusy || !devices?.cameras.length" aria-label="Grabar cámara" @click="settings.cameraOn = !settings.cameraOn" />
+          <button class="switch" role="switch" :aria-checked="settings.cameraOn" :disabled="recording || cameraBusy || !devices?.cameras.length" :aria-label="t('recordCamera')" @click="settings.cameraOn = !settings.cameraOn" />
           <div class="wide">
-            <select v-model.number="settings.cameraIndex" :disabled="recording || cameraBusy || !settings.cameraOn" aria-label="Cámara">
-              <option v-if="!devices?.cameras.length" :value="-1">No se detectó ninguna cámara</option>
-              <option v-for="c in devices?.cameras ?? []" :key="c.index" :value="c.index">{{ c.name }}</option>
+            <select v-model.number="settings.cameraIndex" :disabled="recording || cameraBusy || !settings.cameraOn" :aria-label="t('camera')">
+              <option v-if="!devices?.cameras.length" :value="-1">{{ t("noCamera") }}</option>
+              <option v-for="c in devices?.cameras ?? []" :key="c.index" :value="c.index">{{ native(c.name) }}</option>
             </select>
           </div>
         </div>
@@ -545,11 +549,11 @@ onBeforeUnmount(() => {
               <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5" />
             </svg>
           </div>
-          <div class="label">Micrófono <small>mic.m4a</small></div>
-          <button class="switch" role="switch" :aria-checked="settings.micOn" :disabled="recording || !devices?.mics.length" aria-label="Grabar micrófono" @click="settings.micOn = !settings.micOn" />
+          <div class="label">{{ t("mic") }} <small>mic.m4a</small></div>
+          <button class="switch" role="switch" :aria-checked="settings.micOn" :disabled="recording || !devices?.mics.length" :aria-label="t('recordMic')" @click="settings.micOn = !settings.micOn" />
           <div class="wide">
-            <select v-model="settings.micName" :disabled="recording || !settings.micOn" aria-label="Micrófono">
-              <option v-if="!devices?.mics.length" value="">No se detectó ningún micrófono</option>
+            <select v-model="settings.micName" :disabled="recording || !settings.micOn" :aria-label="t('mic')">
+              <option v-if="!devices?.mics.length" value="">{{ t("noMic") }}</option>
               <option v-for="m in devices?.mics ?? []" :key="m" :value="m">{{ m }}</option>
             </select>
             <div class="meter" aria-hidden="true"><i :style="{ width: `${settings.micOn && micReady ? level * 100 : 0}%` }" /></div>
@@ -564,35 +568,35 @@ onBeforeUnmount(() => {
             </svg>
           </div>
           <div class="label">
-            Audio del sistema
+            {{ t("systemAudio") }}
             <small>system.m4a{{ devices?.system_output ? ` · ${devices.system_output}` : "" }}</small>
           </div>
-          <button class="switch" role="switch" :aria-checked="settings.systemOn" :disabled="recording" aria-label="Grabar audio del sistema" @click="settings.systemOn = !settings.systemOn" />
+          <button class="switch" role="switch" :aria-checked="settings.systemOn" :disabled="recording" :aria-label="t('recordSystem')" @click="settings.systemOn = !settings.systemOn" />
         </div>
       </section>
 
       <details class="card">
-        <summary>Ajustes <small>{{ settings.fps }} fps · calidad {{ settings.quality }}</small></summary>
+        <summary>{{ t("settings") }} <small>{{ t("settingsSummary", { fps: settings.fps, quality: t(QUALITY[settings.quality]).toLowerCase() }) }}</small></summary>
         <div class="grid">
           <div class="field">
-            <label for="fps">Cuadros</label>
+            <label for="fps">{{ t("frames") }}</label>
             <select id="fps" v-model.number="settings.fps" :disabled="recording">
               <option :value="30">30 fps</option>
               <option :value="60">60 fps</option>
             </select>
           </div>
           <div class="field">
-            <label for="quality">Calidad</label>
+            <label for="quality">{{ t("quality") }}</label>
             <select id="quality" v-model="settings.quality" :disabled="recording">
-              <option value="alta">Alta</option>
-              <option value="media">Media</option>
-              <option value="baja">Liviana</option>
+              <option value="alta">{{ t("qualityHigh") }}</option>
+              <option value="media">{{ t("qualityMedium") }}</option>
+              <option value="baja">{{ t("qualityLow") }}</option>
             </select>
           </div>
           <div class="field">
-            <label for="res">Resolución</label>
+            <label for="res">{{ t("resolution") }}</label>
             <select id="res" v-model.number="settings.maxHeight" :disabled="recording">
-              <option :value="0">Nativa</option>
+              <option :value="0">{{ t("native") }}</option>
               <option :value="1440">1440p</option>
               <option :value="1080">1080p</option>
               <option :value="720">720p</option>
@@ -600,60 +604,67 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <label class="opt">
-          <span>Burbuja flotante de cámara<small>Te ves mientras grabás; se puede arrastrar</small></span>
+          <span>{{ t("bubble") }}<small>{{ t("bubbleHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.bubble" @click="settings.bubble = !settings.bubble" />
         </label>
         <label class="opt">
-          <span>Ocultar Dualrec en la grabación<small>La app y la burbuja no salen en screen.mp4</small></span>
+          <span>{{ t("hideApp") }}<small>{{ t("hideAppHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.hideFromCapture" @click="settings.hideFromCapture = !settings.hideFromCapture" />
         </label>
         <label class="opt">
-          <span>Mostrar el cursor<small>Incluye el puntero del mouse en la pantalla</small></span>
+          <span>{{ t("cursor") }}<small>{{ t("cursorHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.cursor" :disabled="recording" @click="settings.cursor = !settings.cursor" />
         </label>
         <div class="opt">
-          <span>Carpeta de grabaciones<small :title="settings.outDir">{{ settings.outDir }}</small></span>
-          <button class="ghost" :disabled="recording" @click="pickFolder">Cambiar</button>
+          <span>{{ t("folder") }}<small :title="settings.outDir">{{ settings.outDir }}</small></span>
+          <button class="ghost" :disabled="recording" @click="pickFolder">{{ t("change") }}</button>
+        </div>
+        <div class="opt">
+          <span>{{ t("language") }}</span>
+          <div class="seg">
+            <button :class="{ active: lang === 'es' }" @click="lang = 'es'">Español</button>
+            <button :class="{ active: lang === 'en' }" @click="lang = 'en'">English</button>
+          </div>
         </div>
       </details>
 
       <details class="card">
-        <summary>Nube <small>{{ settings.cloudOn ? (cloudConfig ? "activada" : "falta configurar") : "desactivada" }}</small></summary>
+        <summary>{{ t("cloud") }} <small>{{ settings.cloudOn ? (cloudConfig ? t("cloudOn") : t("cloudNeedsSetup")) : t("cloudOff") }}</small></summary>
         <label class="opt first">
-          <span>Subir a la nube mientras grabo<small>Al cortar, el link para compartir queda en el portapapeles</small></span>
+          <span>{{ t("cloudUpload") }}<small>{{ t("cloudUploadHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.cloudOn" :disabled="recording" @click="settings.cloudOn = !settings.cloudOn" />
         </label>
         <div class="fields">
-          <label for="api-url">Dirección de Dualrec</label>
-          <input id="api-url" v-model="settings.apiUrl" class="text" type="url" placeholder="https://api.tu-dominio.com" spellcheck="false" :disabled="recording" />
-          <label for="api-token">Token de acceso</label>
+          <label for="api-url">{{ t("apiUrl") }}</label>
+          <input id="api-url" v-model="settings.apiUrl" class="text" type="url" :placeholder="t('apiUrlPlaceholder')" spellcheck="false" :disabled="recording" />
+          <label for="api-token">{{ t("apiToken") }}</label>
           <input id="api-token" v-model="settings.apiToken" class="text" type="password" placeholder="dr_…" autocomplete="off" spellcheck="false" :disabled="recording" />
           <div class="test">
-            <button class="ghost" :disabled="cloudTesting || !settings.apiUrl.trim() || !settings.apiToken.trim()" @click="testCloud">{{ cloudTesting ? "Probando…" : "Probar conexión" }}</button>
-            <small v-if="cloudTest" :class="cloudTest.ok ? 'good' : 'bad'">{{ cloudTest.text }}</small>
+            <button class="ghost" :disabled="cloudTesting || !settings.apiUrl.trim() || !settings.apiToken.trim()" @click="testCloud">{{ cloudTesting ? t("testing") : t("testConnection") }}</button>
+            <small v-if="cloudTest" :class="cloudTest.ok ? 'good' : 'bad'">{{ cloudTest.ok ? t("connectedAs", { name: cloudTest.text }) : native(cloudTest.text) }}</small>
           </div>
         </div>
       </details>
 
       <details class="card">
-        <summary>Claude (IA) <small>{{ claude?.connected ? "conectado" : "armá videos y reels" }}</small></summary>
+        <summary>{{ t("claude") }} <small>{{ claude?.connected ? t("claudeConnected") : t("claudeSummary") }}</small></summary>
         <div class="fields">
-          <p class="about">Conectá Dualrec con Claude y pedile en palabras que arme el video: "hacé un reel vertical con la mejor parte de mi última grabación" o "sacá los silencios y dejá la cámara en una burbuja".</p>
+          <p class="about">{{ t("claudeAbout") }}</p>
           <div class="test">
-            <button class="ghost" :disabled="claudeBusy || !settings.outDir" @click="connectClaude">{{ claude?.connected ? "Volver a conectar" : "Conectar con Claude Desktop" }}</button>
-            <button class="ghost" :disabled="!claude" title="Copia el comando para sumarlo en Claude Code" @click="copyClaudeCommand">{{ claudeCopied ? "¡Copiado!" : "Copiar comando para Claude Code" }}</button>
+            <button class="ghost" :disabled="claudeBusy || !settings.outDir" @click="connectClaude">{{ claude?.connected ? t("claudeReconnect") : t("claudeConnect") }}</button>
+            <button class="ghost" :disabled="!claude" :title="t('claudeCopyTitle')" @click="copyClaudeCommand">{{ claudeCopied ? t("copied") : t("claudeCopy") }}</button>
           </div>
-          <small v-if="claudeNote" :class="claudeNote.ok ? 'good' : 'bad'">{{ claudeNote.text }}</small>
-          <small v-else-if="claude && !claude.desktop_found" class="muted">Necesitás la app de Claude para escritorio (claude.ai/download).</small>
-          <small class="muted">Los videos que arma quedan en la subcarpeta <code>exports</code> de cada grabación.</small>
+          <small v-if="claudeNote" :class="claudeNote.ok ? 'good' : 'bad'">{{ claudeNote.ok ? t("claudeDone") : native(claudeNote.text) }}</small>
+          <small v-else-if="claude && !claude.desktop_found" class="muted">{{ t("claudeNeedsDesktop") }}</small>
+          <small class="muted">{{ t("claudeExportsBefore") }} <code>exports</code> {{ t("claudeExportsAfter") }}</small>
         </div>
       </details>
 
       <details class="card">
-        <summary>Grabaciones <small>{{ recent.length || "" }}</small></summary>
-        <div v-if="!recent.length" class="empty">Todavía no hay grabaciones en esta carpeta.</div>
+        <summary>{{ t("recordings") }} <small>{{ recent.length || "" }}</small></summary>
+        <div v-if="!recent.length" class="empty">{{ t("noRecordings") }}</div>
         <button v-for="m in recent" :key="m.id" class="recent" :title="m.dir" @click="api.openFolder(m.dir)">
-          <span>{{ recentTitle(m) }}<br /><small>{{ m.tracks.map((t) => t.file).join(" · ") }}</small></span>
+          <span>{{ recentTitle(m) }}<br /><small>{{ m.tracks.map((tr) => tr.file).join(" · ") }}</small></span>
           <small>{{ formatClock(m.duration_ms) }} · {{ formatSize(totalSize(m)) }}</small>
         </button>
       </details>
@@ -664,34 +675,34 @@ onBeforeUnmount(() => {
         <button class="rec-btn" :disabled="!!busy || !hasSource || !devices" @click="start">
           <span v-if="busy === 'starting'" class="spinner" />
           <i v-else />
-          {{ busy === "starting" ? "Preparando…" : "Grabar" }}
+          {{ busy === "starting" ? t("preparing") : t("record") }}
         </button>
-        <div class="hint"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> para grabar o cortar desde cualquier app</div>
+        <div class="hint"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> {{ t("shortcutHint") }}</div>
       </template>
       <template v-else>
         <div class="live-bar">
           <div class="timer">
             <span class="dot" :class="{ paused: status.paused }" />
             {{ formatClock(status.elapsed_ms) }}
-            <small v-if="status.paused">en pausa</small>
+            <small v-if="status.paused">{{ t("onPause") }}</small>
           </div>
-          <button class="round" :disabled="!!busy" :title="status.paused ? 'Reanudar (Ctrl+Alt+P)' : 'Pausar (Ctrl+Alt+P)'" @click="togglePause">
+          <button class="round" :disabled="!!busy" :title="`${status.paused ? t('resume') : t('pause')} (Ctrl+Alt+P)`" @click="togglePause">
             <svg v-if="status.paused" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5-12-7.5Z" /></svg>
             <svg v-else viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="1.2" /><rect x="13.8" y="4.5" width="4.2" height="15" rx="1.2" /></svg>
-            {{ status.paused ? "Reanudar" : "Pausar" }}
+            {{ status.paused ? t("resume") : t("pause") }}
           </button>
-          <button class="round stop" :disabled="!!busy" title="Cortar (Ctrl+Alt+R)" @click="stop">
+          <button class="round stop" :disabled="!!busy" :title="`${t('stop')} (Ctrl+Alt+R)`" @click="stop">
             <span v-if="busy === 'stopping'" class="spinner" />
             <svg v-else viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="5.5" width="13" height="13" rx="2.6" /></svg>
-            {{ busy === "stopping" ? "Guardando…" : "Cortar" }}
+            {{ busy === "stopping" ? t("saving") : t("stop") }}
           </button>
         </div>
       </template>
     </footer>
 
     <div v-if="error" class="toast" role="alert">
-      <span>{{ error }}</span>
-      <button aria-label="Cerrar aviso" @click="error = ''">×</button>
+      <span>{{ native(error) }}</span>
+      <button :aria-label="t('closeNotice')" @click="error = ''">×</button>
     </div>
   </div>
 </template>
