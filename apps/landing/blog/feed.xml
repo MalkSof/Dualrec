@@ -5,8 +5,15 @@
     <link>https://dualrec.malkadigital.com/blog/</link>
     <description>Guías y consejos para grabar la pantalla y la cámara en Windows, editar con pistas separadas y sacar videos horizontales y verticales de una misma grabación.</description>
     <language>es-AR</language>
-    <lastBuildDate>Sun, 22 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Nov 2026 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://dualrec.malkadigital.com/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Alternativa gratis a Loom para Windows: cuándo conviene grabar en tu computadora</title>
+      <link>https://dualrec.malkadigital.com/blog/alternativa-gratis-a-loom-windows/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/blog/alternativa-gratis-a-loom-windows/</guid>
+      <pubDate>Mon, 23 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Loom es cómodo para mandar un video con un link. Si lo que querés es editar, grabar sin cuenta o quedarte con los archivos, conviene un grabador local. Comparación honesta con Dualrec.</description>
+    </item>
     <item>
       <title>Cómo armar videos y reels con IA: Dualrec conectado a Claude</title>
       <link>https://dualrec.malkadigital.com/blog/editar-videos-con-claude-ia-mcp/</link>

@@ -1109,3 +1109,91 @@ footer span a {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Lista de espera ---------- */
+
+.wait {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 28px;
+  align-items: center;
+  margin-top: 22px;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(139, 124, 255, 0.45);
+  background: linear-gradient(135deg, rgba(139, 124, 255, 0.14), rgba(77, 163, 255, 0.08));
+}
+
+.wait[hidden],
+.wait-row[hidden] {
+  display: none;
+}
+
+.wait small {
+  color: #d9d3ff;
+  font-weight: 650;
+}
+
+.wait h3 {
+  margin: 6px 0 8px;
+  font-size: 22px;
+}
+
+.wait p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.wait label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.wait-row {
+  display: flex;
+  gap: 10px;
+}
+
+.wait input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+}
+
+.wait input:focus-visible {
+  outline: 2px solid #8b7cff;
+  outline-offset: 1px;
+}
+
+.wait .wait-note {
+  margin-top: 10px;
+  font-size: 13.5px;
+}
+
+.wait .wait-note.ok {
+  color: #3ddc97;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.wait .wait-note.bad {
+  color: #ff6b81;
+}
+
+@media (max-width: 760px) {
+  .wait {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .wait-row {
+    flex-direction: column;
+  }
+}

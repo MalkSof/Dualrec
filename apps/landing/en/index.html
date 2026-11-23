@@ -269,6 +269,40 @@
             <p>Search in plain language and jump to the exact minute where you explained it.</p>
           </div>
         </div>
+        <!-- Waitlist. Hidden until data-action and data-field point to a form. -->
+        <div class="wait" id="espera" hidden>
+          <div>
+            <small>Waitlist</small>
+            <h3>Share your recording with a link</h3>
+            <p>We are building the sharing version: stop the recording and get a link to send. Leave your email and we will tell you when it is ready.</p>
+          </div>
+          <form id="wait-form" data-action="" data-field="" data-ok="Done! We will email you as soon as it is ready." data-err="It could not be sent. Please try again in a while.">
+            <label for="wait-mail">Your email</label>
+            <div class="wait-row">
+              <input id="wait-mail" type="email" required autocomplete="email" placeholder="you@example.com" />
+              <button class="btn primary" type="submit">Notify me</button>
+            </div>
+            <p class="wait-note" id="wait-note" role="status">One email when it launches. No spam.</p>
+          </form>
+        </div>
+        <script>
+          (function () {
+            var f = document.getElementById("wait-form");
+            if (!f.dataset.action || !f.dataset.field) return;
+            document.getElementById("espera").hidden = false;
+            var note = document.getElementById("wait-note");
+            f.addEventListener("submit", function (e) {
+              e.preventDefault();
+              var b = f.querySelector("button");
+              var d = new URLSearchParams();
+              d.set(f.dataset.field, document.getElementById("wait-mail").value.trim());
+              b.disabled = true;
+              fetch(f.dataset.action, { method: "POST", mode: "no-cors", body: d })
+                .then(function () { note.textContent = f.dataset.ok; note.className = "wait-note ok"; f.querySelector(".wait-row").hidden = true; })
+                .catch(function () { note.textContent = f.dataset.err; note.className = "wait-note bad"; b.disabled = false; });
+            });
+          })();
+        </script>
       </section>
 
       <section id="preguntas">

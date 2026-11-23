@@ -142,6 +142,18 @@ PAIRS = [
     ("<b>Cortá y abrí la carpeta</b><span>Los archivos quedan en <code>Videos\\Dualrec</code>, una carpeta por grabación, listos para tu editor.</span>",
      "<b>Stop and open the folder</b><span>The files are in <code>Videos\\Dualrec</code>, one folder per recording, ready for your editor.</span>"),
     ("Dualrec grabando: indicador REC con el tiempo y botones de pausar y cortar", "Dualrec while recording: REC indicator with the elapsed time and pause and stop buttons"),
+    # Lista de espera
+    ("<!-- Lista de espera. Queda oculta hasta que data-action y data-field apunten a un formulario. -->", "<!-- Waitlist. Hidden until data-action and data-field point to a form. -->"),
+    ("<small>Lista de espera</small>", "<small>Waitlist</small>"),
+    ("<h3>Compartí tu grabación con un link</h3>", "<h3>Share your recording with a link</h3>"),
+    ("Estamos armando la versión para compartir: cortás la grabación y tenés un link para mandar. Dejá tu mail y te avisamos cuando esté lista.",
+     "We are building the sharing version: stop the recording and get a link to send. Leave your email and we will tell you when it is ready."),
+    ("¡Listo! Te avisamos apenas esté.", "Done! We will email you as soon as it is ready."),
+    ("No se pudo enviar. Probá de nuevo en un rato.", "It could not be sent. Please try again in a while."),
+    ('<label for="wait-mail">Tu mail</label>', '<label for="wait-mail">Your email</label>'),
+    ("vos@ejemplo.com", "you@example.com"),
+    ('<button class="btn primary" type="submit">Avisame</button>', '<button class="btn primary" type="submit">Notify me</button>'),
+    ("Un solo mail cuando salga. Nada de spam.", "One email when it launches. No spam."),
     # Lo que viene
     ("<h2>Lo que viene</h2>", "<h2>Roadmap</h2>"),
     ("Dualrec empieza como grabador. El plan es que cada video se pueda compartir y consultar.", "Dualrec starts as a recorder. The plan is for every video to be shareable and searchable."),

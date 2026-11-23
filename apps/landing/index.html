@@ -301,6 +301,40 @@
             <p>Buscá en lenguaje natural y saltá al minuto exacto donde lo explicaste.</p>
           </div>
         </div>
+        <!-- Lista de espera. Queda oculta hasta que data-action y data-field apunten a un formulario. -->
+        <div class="wait" id="espera" hidden>
+          <div>
+            <small>Lista de espera</small>
+            <h3>Compartí tu grabación con un link</h3>
+            <p>Estamos armando la versión para compartir: cortás la grabación y tenés un link para mandar. Dejá tu mail y te avisamos cuando esté lista.</p>
+          </div>
+          <form id="wait-form" data-action="" data-field="" data-ok="¡Listo! Te avisamos apenas esté." data-err="No se pudo enviar. Probá de nuevo en un rato.">
+            <label for="wait-mail">Tu mail</label>
+            <div class="wait-row">
+              <input id="wait-mail" type="email" required autocomplete="email" placeholder="vos@ejemplo.com" />
+              <button class="btn primary" type="submit">Avisame</button>
+            </div>
+            <p class="wait-note" id="wait-note" role="status">Un solo mail cuando salga. Nada de spam.</p>
+          </form>
+        </div>
+        <script>
+          (function () {
+            var f = document.getElementById("wait-form");
+            if (!f.dataset.action || !f.dataset.field) return;
+            document.getElementById("espera").hidden = false;
+            var note = document.getElementById("wait-note");
+            f.addEventListener("submit", function (e) {
+              e.preventDefault();
+              var b = f.querySelector("button");
+              var d = new URLSearchParams();
+              d.set(f.dataset.field, document.getElementById("wait-mail").value.trim());
+              b.disabled = true;
+              fetch(f.dataset.action, { method: "POST", mode: "no-cors", body: d })
+                .then(function () { note.textContent = f.dataset.ok; note.className = "wait-note ok"; f.querySelector(".wait-row").hidden = true; })
+                .catch(function () { note.textContent = f.dataset.err; note.className = "wait-note bad"; b.disabled = false; });
+            });
+          })();
+        </script>
       </section>
 
       <section id="preguntas">

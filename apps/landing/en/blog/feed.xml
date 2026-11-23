@@ -5,8 +5,15 @@
     <link>https://dualrec.malkadigital.com/en/blog/</link>
     <description>Guides and tips for recording your screen and webcam on Windows, editing with separate tracks and getting horizontal and vertical videos out of one recording.</description>
     <language>en</language>
-    <lastBuildDate>Sun, 22 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Nov 2026 12:00:00 +0000</lastBuildDate>
     <atom:link href="https://dualrec.malkadigital.com/en/blog/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A free Loom alternative for Windows: when recording locally is the better choice</title>
+      <link>https://dualrec.malkadigital.com/en/blog/free-loom-alternative-windows/</link>
+      <guid isPermaLink="true">https://dualrec.malkadigital.com/en/blog/free-loom-alternative-windows/</guid>
+      <pubDate>Mon, 23 Nov 2026 12:00:00 +0000</pubDate>
+      <description>Loom is great for sending a video with a link. If you want to edit, record with no account or keep the files, a local recorder fits better. An honest comparison with Dualrec.</description>
+    </item>
     <item>
       <title>Make videos and Reels with AI: Dualrec connected to Claude</title>
       <link>https://dualrec.malkadigital.com/en/blog/edit-videos-with-claude-ai-mcp/</link>
