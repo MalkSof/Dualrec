@@ -366,6 +366,8 @@ def head(lang, here, title, description, alternates, og_type, schemas, extra="")
         out += jsonld(schema)
     out += f"""    <link rel="icon" type="image/svg+xml" href="{rel(here, 'assets/logo.svg')}" />
     <link rel="stylesheet" href="{rel(here, 'assets/site.css')}" />
+    <!-- Contador de visitas sin cookies (GoatCounter) -->
+    <script data-goatcounter="https://duelrec.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
   </head>
 """
     return out
