@@ -163,7 +163,7 @@ T = {
         "faq": "Frequently asked questions",
         "cta_text": "<strong>Dualrec</strong> is a free recorder for Windows 10 and 11. It saves your screen, camera, microphone and system audio as four synced files.",
         "download": "Download for Windows",
-        "cta_fine": "30 MB installer · no account or sign-up · no watermark · the app interface is in Spanish for now",
+        "cta_fine": "30 MB installer · no account or sign-up · no watermark · app in English and Spanish",
         "end_h2": "Try Dualrec for free",
         "end_sub": "One recording, four synced files. No sign-up, no watermark and no time limit. For Windows 10 and 11.",
         "end_fine": "Windows may warn that the installer is not signed: choose “More info” and then “Run anyway”.",

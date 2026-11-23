@@ -76,7 +76,7 @@ PAIRS = [
     ("sincronizados. Editás cada uno como quieras, sin la cámara pegada encima del video.", "files. Edit each one however you like, with no camera burned on top of the video."),
     ("Descargar para Windows", "Download for Windows"),
     ("Ver el código", "View the code"),
-    ("Instalador de 30 MB · sin cuenta ni registro · las grabaciones quedan en tu computadora", "30 MB installer · no account or sign-up · recordings stay on your computer · the app interface is in Spanish for now"),
+    ("Instalador de 30 MB · sin cuenta ni registro · las grabaciones quedan en tu computadora", "30 MB installer · no account or sign-up · recordings stay on your computer · app in English and Spanish"),
     ("Dualrec después de grabar: lista los archivos screen.mp4, camera.mp4, mic.m4a y system.m4a de la grabación", "Dualrec after a recording: it lists the files screen.mp4, camera.mp4, mic.m4a and system.m4a"),
     # Pistas
     ("Una grabación, cuatro archivos", "One recording, four files"),

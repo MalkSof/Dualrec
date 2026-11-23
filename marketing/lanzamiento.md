@@ -9,7 +9,7 @@ Antes de publicar en cada lugar:
 - Adjuntá el video o una captura. Un post con imagen rinde mucho más que uno solo de texto.
 - No publiques en shabat.
 
-Orden sugerido: r/ClaudeAI → r/mcp → directorios de MCP → r/devsarg → r/NewTubers → Show HN → Product Hunt (el último, cuando la app ya esté en inglés).
+Orden sugerido: r/ClaudeAI → r/mcp → directorios de MCP → r/devsarg → r/NewTubers → Show HN → Product Hunt (el último).
 
 ---
 
@@ -39,7 +39,7 @@ So I can type "make a vertical Reel from the part where I show the dashboard, sc
 
 Everything runs locally with FFmpeg. The video files are not uploaded; Claude only receives the recording details and the still frames it asks for.
 
-Honest limitations: Windows only for now, the app UI is still in Spanish, and Claude can't hear the audio, so captions come from text you give it (transcription is on the roadmap).
+Honest limitations: Windows only for now, and Claude can't hear the audio, so captions come from text you give it (transcription is on the roadmap).
 
 It's free, no account, no watermark. It connects to Claude Desktop with one button, or to Claude Code with one command.
 
@@ -104,7 +104,7 @@ What that lets you do:
 
 Free, no account, no watermark, no time limit. Windows 10 and 11. It's simpler than OBS: no scenes to set up.
 
-Not included: it doesn't make share links and the app UI is in Spanish for now.
+Not included: it doesn't make share links yet.
 
 https://dualrec.malkadigital.com/en/
 
@@ -162,7 +162,7 @@ Dualrec is a small Rust/Tauri app for Windows that records the screen, the webca
 
 It also includes an MCP server (hand-written JSON-RPC over stdio, same binary) so an assistant like Claude can list recordings, find the speech segments, look at frames and render a finished video with FFmpeg: layouts, cuts, zoom, captions.
 
-Limitations: Windows only, UI in Spanish for now, no transcription, no share links.
+Limitations: Windows only, no transcription, no share links.
 
 I'd appreciate feedback on the sync approach and on the MCP tool design.
 ```
@@ -171,7 +171,7 @@ I'd appreciate feedback on the sync approach and on the MCP tool design.
 
 ## 6. Product Hunt (inglés)
 
-Conviene lanzarlo cuando la app esté en inglés. Sale mejor de martes a jueves, a las 00:01 hora del Pacífico (05:01 de Buenos Aires).
+Sale mejor de martes a jueves, a las 00:01 hora del Pacífico (05:01 de Buenos Aires).
 
 **Nombre:** `Dualrec`
 
