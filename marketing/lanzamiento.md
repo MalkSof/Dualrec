@@ -71,7 +71,7 @@ I added an MCP server to my screen recorder and wanted to share how it's built, 
 
 Things I learned: returning frames as images was the difference between the model guessing and actually knowing what's on screen, and long-running tools need a job/poll pattern.
 
-Windows only for now. Free and open source.
+Windows only for now. Free, with the source on GitHub.
 
 Repo: https://github.com/MalkSof/Dualrec
 Site: https://dualrec.malkadigital.com/en/
@@ -187,7 +187,7 @@ Record screen and webcam as separate files, edit with AI
 Free Windows recorder that saves screen, webcam, mic and system audio as four synced files. Move or remove the camera in the edit, or connect Claude and ask for a finished Reel or long video. No account, no watermark.
 ```
 
-**Temas:** Video, Productivity, Artificial Intelligence, Open Source
+**Temas:** Video, Productivity, Artificial Intelligence
 
 **Primer comentario**
 
@@ -198,7 +198,7 @@ I built Dualrec because every recorder I tried glued my webcam onto the screen v
 
 The newest part is a connector for Claude: you describe the video you want and it exports the MP4 on your computer.
 
-It's free and open source. I'd love to know what would make you switch from your current recorder.
+It's free and the source is on GitHub. I'd love to know what would make you switch from your current recorder.
 ```
 
 **Galería:** el reel de Claude (`marketing/reel/dualrec-claude-reel.mp4`), una captura de la app y una de la carpeta con los cuatro archivos.
@@ -235,3 +235,110 @@ Dónde anotarlo (revisá en cada uno cómo se envía; la mayoría es un formular
 | Repositorio | https://github.com/MalkSof/Dualrec |
 | Sitio | https://dualrec.malkadigital.com/en/ |
 | Precio | Gratis |
+
+---
+
+## 8. Tweets de la semana
+
+Se suben a mano en X, o se dejan programados desde x.com en la computadora (ícono del calendario al escribir el tweet). Uno por día, a la misma hora que el post de ese día. Los de inglés llevan `marketing/reel/dualrec-claude-en-reel.mp4` y los de español `marketing/reel/dualrec-claude-reel.mp4`.
+
+### Martes 24/11 · español (con el reel en español)
+
+```
+¿Grabás 10 minutos y editás 3 horas?
+
+Conecté Dualrec con Claude por MCP: le escribís "hacé un reel vertical y sacá los silencios" y la IA arma el video en tu compu.
+
+Gratis para Windows, sin marca de agua 👇
+https://dualrec.malkadigital.com/
+```
+
+### Martes 24/11 · inglés (con el reel en inglés)
+
+```
+You record for 10 minutes and edit for 3 hours?
+
+I connected Dualrec to Claude over MCP: type "make a vertical Reel and cut the silences" and the AI builds the video on your computer.
+
+Free for Windows, no watermark 👇
+https://dualrec.malkadigital.com/en/
+```
+
+### Miércoles 25/11 · inglés (con una captura de la app)
+
+```
+How the Dualrec MCP server works:
+
+- same binary as the app, JSON-RPC over stdio
+- 5 tools: list recordings, find speech, get frames, render, check status
+- FFmpeg does the cuts, layouts, zoom and captions, all local
+
+Code: https://github.com/MalkSof/Dualrec
+```
+
+### Jueves 26/11 · español
+
+```
+La mayoría de los grabadores te pegan la cámara arriba de la pantalla y después no la podés mover.
+
+Dualrec graba 4 archivos separados y sincronizados: pantalla, cámara, micrófono y audio de la compu.
+
+Gratis, sin cuenta 👇
+https://dualrec.malkadigital.com/
+```
+
+### Viernes 27/11 · español (a la mañana)
+
+```
+¿Loom o un grabador en tu compu?
+
+Loom: mandás un link al instante.
+Dualrec: grabás sin cuenta, sin subir nada, y te quedás con cada fuente en su archivo para editar.
+
+La comparación completa 👇
+https://dualrec.malkadigital.com/blog/alternativa-gratis-a-loom-windows/
+```
+
+### Domingo 29/11 · inglés
+
+```
+One screen recording, three videos:
+
+- a long horizontal one for YouTube
+- a vertical Short with the screen on top and you below
+- a square clip of just the camera
+
+That only works if the webcam is its own file. Dualrec records it that way, free 👇
+https://dualrec.malkadigital.com/en/
+```
+
+### Lunes 30/11 · inglés
+
+```
+Tip for tutorial makers: record your mic and your system audio as separate files.
+
+You can then fix your voice without touching the app sounds, or drop the system audio entirely.
+
+Dualrec does this by default 👇
+https://dualrec.malkadigital.com/en/
+```
+
+### Martes 1/12 · inglés (después de publicar en Hacker News, con el link al post)
+
+```
+Dualrec is on Hacker News today: a Windows recorder that saves screen, webcam, mic and system audio as separate synced files, with an MCP server so Claude can edit them.
+
+Feedback welcome 👇
+[link al post de Hacker News]
+```
+
+### Jueves 3/12 · inglés (con el link de Product Hunt)
+
+```
+Dualrec is live on Product Hunt 🚀
+
+Record screen and webcam as separate files, then ask Claude for a finished Reel or long video. Free for Windows.
+
+If it's useful to you, a comment there helps a lot 👇
+[link de Product Hunt]
+```
