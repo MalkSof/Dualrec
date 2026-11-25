@@ -41,7 +41,7 @@ Everything runs locally with FFmpeg. The video files are not uploaded; Claude on
 
 Honest limitations: Windows only for now, and Claude can't hear the audio, so captions come from text you give it (transcription is on the roadmap).
 
-It's free, no account, no watermark. It connects to Claude Desktop with one button, or to Claude Code with one command.
+It's free and open source (MIT), no account, no watermark. It connects to Claude Desktop with one button, or to Claude Code with one command.
 
 Site: https://dualrec.malkadigital.com/en/
 Source: https://github.com/MalkSof/Dualrec
@@ -71,7 +71,7 @@ I added an MCP server to my screen recorder and wanted to share how it's built, 
 
 Things I learned: returning frames as images was the difference between the model guessing and actually knowing what's on screen, and long-running tools need a job/poll pattern.
 
-Windows only for now. Free, with the source on GitHub.
+Windows only for now. Free and open source (MIT).
 
 Repo: https://github.com/MalkSof/Dualrec
 Site: https://dualrec.malkadigital.com/en/
@@ -131,7 +131,7 @@ Qué hace:
 - Graba pantalla, cámara, micrófono y audio de la compu en cuatro archivos separados y sincronizados. Después movés o sacás la cámara en la edición.
 - Trae un conector MCP para Claude: le escribís "hacé un reel vertical con la parte donde muestro el panel y sacá los silencios" y exporta el MP4. Todo corre en tu máquina con FFmpeg, no se sube nada.
 
-Está hecho en Rust con Tauri. Es gratis, sin cuenta, sin marca de agua y el código está en GitHub.
+Está hecho en Rust con Tauri. Es gratis, sin cuenta, sin marca de agua y de código abierto (licencia MIT).
 
 Lo que le falta: solo Windows por ahora, no genera link para compartir y Claude no escucha el audio (los subtítulos salen de un texto que le pasás).
 
@@ -187,7 +187,7 @@ Record screen and webcam as separate files, edit with AI
 Free Windows recorder that saves screen, webcam, mic and system audio as four synced files. Move or remove the camera in the edit, or connect Claude and ask for a finished Reel or long video. No account, no watermark.
 ```
 
-**Temas:** Video, Productivity, Artificial Intelligence
+**Temas:** Video, Productivity, Artificial Intelligence, Open Source
 
 **Primer comentario**
 
@@ -198,7 +198,7 @@ I built Dualrec because every recorder I tried glued my webcam onto the screen v
 
 The newest part is a connector for Claude: you describe the video you want and it exports the MP4 on your computer.
 
-It's free and the source is on GitHub. I'd love to know what would make you switch from your current recorder.
+It's free and open source (MIT). I'd love to know what would make you switch from your current recorder.
 ```
 
 **Galería:** el reel de Claude (`marketing/reel/dualrec-claude-reel.mp4`), una captura de la app y una de la carpeta con los cuatro archivos.
@@ -235,6 +235,7 @@ Dónde anotarlo (revisá en cada uno cómo se envía; la mayoría es un formular
 | Repositorio | https://github.com/MalkSof/Dualrec |
 | Sitio | https://dualrec.malkadigital.com/en/ |
 | Precio | Gratis |
+| Licencia | MIT |
 
 ---
 

@@ -3,6 +3,7 @@ name = "dualrec"
 version = "0.1.3"
 description = "Grabador de pantalla y cámara en pistas separadas"
 authors = ["MalkaDigital"]
+license = "MIT"
 edition = "2021"
 
 [build-dependencies]

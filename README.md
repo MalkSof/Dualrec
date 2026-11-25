@@ -223,6 +223,25 @@ Variables útiles en desarrollo: `DUALREC_ENCODER=x264|nvenc|qsv|amf` fuerza el 
 | 4. Chat con IA | Segmentos con embeddings, chat con citas al minuto | Pendiente |
 | 5. MCP + visual | Servidor MCP e indexado de lo que se ve en pantalla | Pendiente |
 
+## Licencia
+
+Dualrec es software libre bajo la [licencia MIT](LICENSE).
+
+## Code signing policy
+
+Installers up to version 0.1.3 are not signed. Signing is being set up with the SignPath Foundation program for open source projects:
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+- Committers and reviewers: [MalkSof](https://github.com/MalkSof)
+- Approvers: [MalkSof](https://github.com/MalkSof)
+
+Release binaries are built from this repository by GitHub Actions ([release.yml](.github/workflows/release.yml)) when a version tag is pushed.
+
+### Privacy policy
+
+This program will not transfer any information to other networked systems unless specifically requested by the user or the person installing or operating it. Recordings stay on the computer where they are made.
+
 ## Licencias de terceros
 
 Dualrec ejecuta **FFmpeg** como un programa aparte (sidecar). El build que baja `scripts/fetch-ffmpeg.ps1` está licenciado bajo **GPL v3**; su código fuente y licencia están en <https://ffmpeg.org> y <https://www.gyan.dev/ffmpeg/builds/>. Si se distribuye el instalador, hay que acompañarlo con ese aviso.
