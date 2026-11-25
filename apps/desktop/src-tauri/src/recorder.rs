@@ -35,6 +35,44 @@ pub struct RecOptions {
     /// Conserva los MP4 fragmentados al cortar: los necesita la subida a la nube.
     #[serde(default)]
     pub keep_parts: bool,
+    /// Nombre que eligió el usuario para la grabación; también nombra la carpeta.
+    #[serde(default)]
+    pub name: Option<String>,
+}
+
+/// Convierte el nombre elegido en un nombre de carpeta válido en Windows.
+/// Devuelve `None` si no queda nada usable.
+pub fn folder_name(name: &str) -> Option<String> {
+    let cleaned: String = name
+        .chars()
+        .map(|c| if c.is_control() || r#"<>:"/\|?*"#.contains(c) { ' ' } else { c })
+        .collect();
+    let mut s = cleaned.split_whitespace().collect::<Vec<_>>().join(" ");
+    if s.chars().count() > 80 {
+        s = s.chars().take(80).collect();
+    }
+    let s = s.trim_end_matches(['.', ' ']).trim().to_string();
+    if s.is_empty() {
+        return None;
+    }
+    let upper = s.split('.').next().unwrap_or("").to_ascii_uppercase();
+    let reserved = matches!(upper.as_str(), "CON" | "PRN" | "AUX" | "NUL")
+        || ((upper.starts_with("COM") || upper.starts_with("LPT"))
+            && upper.len() == 4
+            && upper.as_bytes()[3].is_ascii_digit());
+    Some(if reserved { format!("{s}_") } else { s })
+}
+
+/// Primera carpeta libre: `nombre`, `nombre (2)`, `nombre (3)`...
+fn unique_dir(base: &Path, name: &str) -> PathBuf {
+    let first = base.join(name);
+    if !first.exists() {
+        return first;
+    }
+    (2..)
+        .map(|n| base.join(format!("{name} ({n})")))
+        .find(|p| !p.exists())
+        .unwrap()
 }
 
 /// Nombre del archivo fragmentado de una pista: `screen.mp4` -> `screen.part.mp4`.
@@ -90,6 +128,9 @@ pub struct Manifest {
     /// recording | ready | failed
     pub status: String,
     pub recorded_at: String,
+    /// Nombre que le puso el usuario; sin nombre, la carpeta lleva la fecha.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
     pub duration_ms: u64,
     pub encoder: String,
     pub clock: String,
@@ -333,7 +374,15 @@ impl Session {
 
         let now = chrono::Local::now();
         let id = now.format("%Y-%m-%d_%H-%M-%S").to_string();
-        let dir = PathBuf::from(&opts.out_dir).join(&id);
+        let name = opts
+            .name
+            .as_deref()
+            .map(|n| n.split_whitespace().collect::<Vec<_>>().join(" "))
+            .filter(|n| !n.is_empty());
+        let dir = match name.as_deref().and_then(folder_name) {
+            Some(folder) => unique_dir(Path::new(&opts.out_dir), &folder),
+            None => PathBuf::from(&opts.out_dir).join(&id),
+        };
         std::fs::create_dir_all(&dir)
             .with_context(|| format!("No se pudo crear la carpeta {}", dir.display()))?;
 
@@ -521,6 +570,7 @@ impl Session {
             app_version: env!("CARGO_PKG_VERSION").into(),
             status: "recording".into(),
             recorded_at: now.to_rfc3339(),
+            name,
             duration_ms: 0,
             encoder: encoder.codec().into(),
             clock: "monotonic; todas las pistas comparten t0 (offset_ms relativo a t0)".into(),
@@ -689,6 +739,7 @@ mod tests {
                 app_version: "0".into(),
                 status: "ready".into(),
                 recorded_at: String::new(),
+                name: None,
                 duration_ms: 1000,
                 encoder: "libx264".into(),
                 clock: String::new(),
@@ -701,6 +752,27 @@ mod tests {
         let list = list_recordings(&base);
         assert_eq!(list.len(), 2);
         assert_eq!(list[0].id, "2026-01-02_10-00-00");
+        let _ = std::fs::remove_dir_all(&base);
+    }
+
+    #[test]
+    fn folder_names_are_safe_on_windows() {
+        assert_eq!(folder_name("  Clase 3: Excel / tablas?  ").as_deref(), Some("Clase 3 Excel tablas"));
+        assert_eq!(folder_name("Demo...").as_deref(), Some("Demo"));
+        assert_eq!(folder_name("con").as_deref(), Some("con_"));
+        assert_eq!(folder_name("COM1.txt").as_deref(), Some("COM1.txt_"));
+        assert_eq!(folder_name("Comida").as_deref(), Some("Comida"));
+        assert_eq!(folder_name(" ?*: "), None);
+        assert_eq!(folder_name(&"a".repeat(200)).map(|s| s.len()), Some(80));
+    }
+
+    #[test]
+    fn repeated_names_get_a_number() {
+        let base = std::env::temp_dir().join(format!("dualrec-names-{}", std::process::id()));
+        std::fs::create_dir_all(base.join("Demo")).unwrap();
+        std::fs::create_dir_all(base.join("Demo (2)")).unwrap();
+        assert_eq!(unique_dir(&base, "Demo"), base.join("Demo (3)"));
+        assert_eq!(unique_dir(&base, "Otra"), base.join("Otra"));
         let _ = std::fs::remove_dir_all(&base);
     }
 }

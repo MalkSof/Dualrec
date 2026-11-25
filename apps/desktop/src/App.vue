@@ -19,6 +19,9 @@ import { lang, locale, native, t } from "./i18n";
 
 const STORE_KEY = "dualrec.settings.v1";
 
+/** La subida a la nube todavía no está publicada: se oculta y no se usa. */
+const CLOUD_ENABLED = false;
+
 const settings = reactive({
   screenMode: "monitor" as "monitor" | "window" | "none",
   monitorIndex: 0,
@@ -75,6 +78,10 @@ const error = ref("");
 const last = ref<Manifest | null>(null);
 const recent = ref<Manifest[]>([]);
 const scroller = ref<HTMLElement | null>(null);
+/** Nombre para la próxima grabación (también nombra su carpeta). */
+const recName = ref("");
+/** Nombre de la grabación en curso. */
+const currentName = ref("");
 
 const recording = computed(() => status.value.recording);
 const cameraLive = computed(() => settings.cameraOn && camera.value !== null);
@@ -87,6 +94,7 @@ const hasSource = computed(
 );
 
 const cloudConfig = computed<CloudConfig | null>(() =>
+  CLOUD_ENABLED &&
   settings.cloudOn && settings.apiUrl.trim() && settings.apiToken.trim()
     ? { api_url: settings.apiUrl.trim(), token: settings.apiToken.trim() }
     : null,
@@ -301,10 +309,12 @@ async function start() {
         quality: settings.quality,
         max_height: settings.maxHeight || null,
         cursor: settings.cursor,
+        name: recName.value.trim() || null,
       },
       cloud: cloudConfig.value,
-      title: null,
+      title: recName.value.trim() || null,
     });
+    currentName.value = recName.value.trim();
     last.value = null;
     status.value = { ...status.value, recording: true, paused: false, elapsed_ms: 0 };
   } catch (e) {
@@ -320,6 +330,8 @@ async function stop() {
   try {
     last.value = await api.stop();
     status.value = { ...status.value, recording: false, paused: false };
+    recName.value = "";
+    currentName.value = "";
     scroller.value?.scrollTo({ top: 0, behavior: "smooth" });
     await loadRecent();
   } catch (e) {
@@ -350,12 +362,15 @@ function trackLabel(tr: Track): string {
   return `${(tr.sample_rate ?? 0) / 1000} kHz · ${tr.channels === 1 ? "mono" : t("stereo")}`;
 }
 
-function recentTitle(m: Manifest): string {
+function recordedAt(m: Manifest): string {
   const d = new Date(m.recorded_at);
   return Number.isNaN(d.getTime())
     ? m.id
     : d.toLocaleString(locale(), { dateStyle: "medium", timeStyle: "short" });
 }
+
+/** Aviso bajo el botón cuando no se puede grabar todavía. */
+const recBlocker = computed(() => (!devices.value ? t("searchingDevices") : !hasSource.value ? t("needSource") : ""));
 
 const QUALITY = { alta: "qualityHigh", media: "qualityMedium", baja: "qualityLow" } as const;
 
@@ -378,7 +393,7 @@ onMounted(async () => {
   void api.setCaptureHidden(settings.hideFromCapture);
   void api.encoder().then((e) => (encoder.value = e));
   await Promise.all([applyCamera(), applyMic(), loadRecent()]);
-  const defaults = await api.cloudDefaults().catch(() => null);
+  const defaults = CLOUD_ENABLED ? await api.cloudDefaults().catch(() => null) : null;
   if (defaults && !settings.apiUrl && !settings.apiToken) {
     [settings.apiUrl, settings.apiToken] = defaults;
     settings.cloudOn = true;
@@ -464,13 +479,14 @@ onBeforeUnmount(() => {
         <div v-if="recording" class="rec-pill">
           <span class="dot" :class="{ paused: status.paused }" />
           {{ status.paused ? t("paused") : "REC" }} {{ formatClock(status.elapsed_ms) }}
+          <span v-if="currentName" class="rec-name">· {{ currentName }}</span>
         </div>
         <div v-if="recording && cloud" class="cloud-pill" :class="cloud.state">{{ cloudLabel }}</div>
       </section>
 
       <section v-if="last" class="card">
         <div class="result-head">
-          <b><span class="ok">✓</span> {{ t("saved") }} · {{ formatClock(last.duration_ms) }}</b>
+          <b><span class="ok">✓</span> {{ last.name || t("saved") }} · {{ formatClock(last.duration_ms) }}</b>
           <button class="ghost" @click="api.openFolder(last.dir)">{{ t("openFolder") }}</button>
         </div>
         <div v-for="tr in last.tracks" :key="tr.file" class="track" :class="{ bad: tr.error }">
@@ -488,7 +504,7 @@ onBeforeUnmount(() => {
           </span>
           <button v-if="cloud.share_url" class="ghost" @click="copyLink(cloud.share_url)">{{ linkCopied ? t("copied") : t("copyLink") }}</button>
         </div>
-        <div class="card-foot" />
+        <div class="saved-in" :title="last.dir">{{ t("savedIn") }} <code>{{ last.dir }}</code></div>
       </section>
 
       <section class="card">
@@ -533,7 +549,7 @@ onBeforeUnmount(() => {
             {{ t("camera") }}
             <small>{{ cameraBusy ? t("openingCamera") : camera ? `camera.mp4 · ${camera.width}×${camera.height}` : "camera.mp4" }}</small>
           </div>
-          <button class="switch" role="switch" :aria-checked="settings.cameraOn" :disabled="recording || cameraBusy || !devices?.cameras.length" :aria-label="t('recordCamera')" @click="settings.cameraOn = !settings.cameraOn" />
+          <button class="switch" role="switch" :aria-checked="settings.cameraOn && !!devices?.cameras.length" :disabled="recording || cameraBusy || !devices?.cameras.length" :aria-label="t('recordCamera')" @click="settings.cameraOn = !settings.cameraOn" />
           <div class="wide">
             <select v-model.number="settings.cameraIndex" :disabled="recording || cameraBusy || !settings.cameraOn" :aria-label="t('camera')">
               <option v-if="!devices?.cameras.length" :value="-1">{{ t("noCamera") }}</option>
@@ -550,7 +566,7 @@ onBeforeUnmount(() => {
             </svg>
           </div>
           <div class="label">{{ t("mic") }} <small>mic.m4a</small></div>
-          <button class="switch" role="switch" :aria-checked="settings.micOn" :disabled="recording || !devices?.mics.length" :aria-label="t('recordMic')" @click="settings.micOn = !settings.micOn" />
+          <button class="switch" role="switch" :aria-checked="settings.micOn && !!devices?.mics.length" :disabled="recording || !devices?.mics.length" :aria-label="t('recordMic')" @click="settings.micOn = !settings.micOn" />
           <div class="wide">
             <select v-model="settings.micName" :disabled="recording || !settings.micOn" :aria-label="t('mic')">
               <option v-if="!devices?.mics.length" value="">{{ t("noMic") }}</option>
@@ -628,7 +644,7 @@ onBeforeUnmount(() => {
         </div>
       </details>
 
-      <details class="card">
+      <details v-if="CLOUD_ENABLED" class="card">
         <summary>{{ t("cloud") }} <small>{{ settings.cloudOn ? (cloudConfig ? t("cloudOn") : t("cloudNeedsSetup")) : t("cloudOff") }}</small></summary>
         <label class="opt first">
           <span>{{ t("cloudUpload") }}<small>{{ t("cloudUploadHint") }}</small></span>
@@ -664,7 +680,7 @@ onBeforeUnmount(() => {
         <summary>{{ t("recordings") }} <small>{{ recent.length || "" }}</small></summary>
         <div v-if="!recent.length" class="empty">{{ t("noRecordings") }}</div>
         <button v-for="m in recent" :key="m.id" class="recent" :title="m.dir" @click="api.openFolder(m.dir)">
-          <span>{{ recentTitle(m) }}<br /><small>{{ m.tracks.map((tr) => tr.file).join(" · ") }}</small></span>
+          <span>{{ m.name || recordedAt(m) }}<br /><small>{{ m.name ? `${recordedAt(m)} · ` : "" }}{{ m.tracks.map((tr) => tr.file).join(" · ") }}</small></span>
           <small>{{ formatClock(m.duration_ms) }} · {{ formatSize(totalSize(m)) }}</small>
         </button>
       </details>
@@ -672,12 +688,27 @@ onBeforeUnmount(() => {
 
     <footer class="bottom">
       <template v-if="!recording">
+        <label class="name-field">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2.2h7a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-10Z" /></svg>
+          <input
+            v-model="recName"
+            class="name-input"
+            type="text"
+            maxlength="80"
+            spellcheck="false"
+            :placeholder="t('namePlaceholder')"
+            :aria-label="t('nameLabel')"
+            :disabled="!!busy"
+            @keydown.enter="start"
+          />
+        </label>
         <button class="rec-btn" :disabled="!!busy || !hasSource || !devices" @click="start">
           <span v-if="busy === 'starting'" class="spinner" />
           <i v-else />
           {{ busy === "starting" ? t("preparing") : t("record") }}
         </button>
-        <div class="hint"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> {{ t("shortcutHint") }}</div>
+        <div v-if="recBlocker" class="hint warn">{{ recBlocker }}</div>
+        <div v-else class="hint"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> {{ t("shortcutHint") }}</div>
       </template>
       <template v-else>
         <div class="live-bar">
@@ -685,6 +716,7 @@ onBeforeUnmount(() => {
             <span class="dot" :class="{ paused: status.paused }" />
             {{ formatClock(status.elapsed_ms) }}
             <small v-if="status.paused">{{ t("onPause") }}</small>
+            <small v-else-if="currentName" class="rec-name">{{ currentName }}</small>
           </div>
           <button class="round" :disabled="!!busy" :title="`${status.paused ? t('resume') : t('pause')} (Ctrl+Alt+P)`" @click="togglePause">
             <svg v-if="status.paused" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5-12-7.5Z" /></svg>

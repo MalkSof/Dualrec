@@ -54,6 +54,7 @@ export interface StartRequest {
     quality: "alta" | "media" | "baja";
     max_height: number | null;
     cursor: boolean;
+    name: string | null;
   };
   cloud: CloudConfig | null;
   title: string | null;
@@ -77,6 +78,7 @@ export interface Manifest {
   id: string;
   status: string;
   recorded_at: string;
+  name?: string;
   duration_ms: number;
   encoder: string;
   dir: string;

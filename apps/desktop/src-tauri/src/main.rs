@@ -187,6 +187,7 @@ fn upload_state(manifest: &Manifest, cfg: &CloudConfig, title: Option<String>) -
         client_id: manifest.id.clone(),
         title: title
             .filter(|t| !t.trim().is_empty())
+            .or_else(|| manifest.name.clone())
             .unwrap_or_else(|| format!("Grabación {}", manifest.id.replace('_', " "))),
         recorded_at: manifest.recorded_at.clone(),
         video_id: None,
@@ -520,6 +521,7 @@ fn selftest(args: &[String]) -> i32 {
         max_height: Some(1080),
         cursor: true,
         keep_parts: false,
+        name: None,
     };
     let cloud = match (std::env::var("DUALREC_API_URL"), std::env::var("DUALREC_TOKEN")) {
         (Ok(api_url), Ok(token)) => Some(CloudConfig { api_url, token }),

@@ -238,6 +238,7 @@ fn exports_of(dir: &Path) -> Vec<Value> {
 fn summary(m: &Manifest) -> Value {
     json!({
         "id": m.id,
+        "name": m.name,
         "recorded_at": m.recorded_at,
         "duration_seconds": m.duration_ms as f64 / 1000.0,
         "status": m.status,
