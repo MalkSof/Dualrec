@@ -23,6 +23,8 @@ const STORE_KEY = "dualrec.settings.v1";
 const CLOUD_ENABLED = false;
 
 const settings = reactive({
+  /** "video": pantalla y cámara; "audio": solo micrófono y sonido de la compu. */
+  mode: "video" as "video" | "audio",
   screenMode: "monitor" as "monitor" | "window" | "none",
   monitorIndex: 0,
   windowHwnd: 0,
@@ -84,14 +86,16 @@ const recName = ref("");
 const currentName = ref("");
 
 const recording = computed(() => status.value.recording);
-const cameraLive = computed(() => settings.cameraOn && camera.value !== null);
-const hasSource = computed(
-  () =>
-    settings.screenMode !== "none" ||
-    cameraLive.value ||
-    (settings.micOn && micReady.value) ||
-    settings.systemOn,
+const audioMode = computed(() => settings.mode === "audio");
+const cameraLive = computed(() => !audioMode.value && settings.cameraOn && camera.value !== null);
+const hasAudio = computed(() => (settings.micOn && micReady.value) || settings.systemOn);
+const hasSource = computed(() =>
+  audioMode.value ? hasAudio.value : settings.screenMode !== "none" || cameraLive.value || hasAudio.value,
 );
+
+/** Últimos niveles del micrófono, para dibujar la onda en el modo audio. */
+const BARS = 36;
+const levels = ref<number[]>(Array(BARS).fill(0));
 
 const cloudConfig = computed<CloudConfig | null>(() =>
   CLOUD_ENABLED &&
@@ -182,6 +186,7 @@ async function resumePending() {
 }
 
 const screenTarget = computed<ScreenTarget | null>(() => {
+  if (audioMode.value) return null;
   if (settings.screenMode === "monitor") return { kind: "monitor", index: settings.monitorIndex };
   if (settings.screenMode === "window" && settings.windowHwnd)
     return { kind: "window", hwnd: settings.windowHwnd };
@@ -251,7 +256,7 @@ async function applyCamera() {
   if (recording.value) return;
   cameraBusy.value = true;
   try {
-    const wanted = settings.cameraOn && settings.cameraIndex >= 0 ? settings.cameraIndex : null;
+    const wanted = !audioMode.value && settings.cameraOn && settings.cameraIndex >= 0 ? settings.cameraIndex : null;
     camera.value = await api.setCamera(wanted);
   } catch (e) {
     camera.value = null;
@@ -294,7 +299,7 @@ async function loadRecent() {
 
 async function start() {
   if (busy.value || recording.value) return;
-  if (!hasSource.value) return fail("Elegí al menos una fuente para grabar.");
+  if (!hasSource.value) return fail(audioMode.value ? t("needAudio") : "Elegí al menos una fuente para grabar.");
   busy.value = "starting";
   error.value = "";
   try {
@@ -370,7 +375,26 @@ function recordedAt(m: Manifest): string {
 }
 
 /** Aviso bajo el botón cuando no se puede grabar todavía. */
-const recBlocker = computed(() => (!devices.value ? t("searchingDevices") : !hasSource.value ? t("needSource") : ""));
+const recBlocker = computed(() =>
+  !devices.value ? t("searchingDevices") : !hasSource.value ? t(audioMode.value ? "needAudio" : "needSource") : "",
+);
+
+function isAudioOnly(m: Manifest): boolean {
+  return !m.tracks.some((tr) => tr.width);
+}
+
+/** Pedido listo para pegar en Claude con la grabación recién guardada. */
+const claudePrompt = computed(() => {
+  const m = last.value;
+  if (!m) return "";
+  const name = m.name || recordedAt(m);
+  return isAudioOnly(m) ? t("promptAudio", { name }) : t("promptVideo", { name });
+});
+const promptCopied = ref(false);
+async function copyPrompt() {
+  promptCopied.value = await api.copyText(claudePrompt.value);
+  setTimeout(() => (promptCopied.value = false), 1800);
+}
 
 const QUALITY = { alta: "qualityHigh", media: "qualityMedium", baja: "qualityLow" } as const;
 
@@ -378,7 +402,7 @@ function totalSize(m: Manifest): number {
   return m.tracks.reduce((a, tr) => a + tr.size_bytes, 0);
 }
 
-watch(() => [settings.cameraOn, settings.cameraIndex], applyCamera);
+watch(() => [settings.cameraOn, settings.cameraIndex, settings.mode], applyCamera);
 watch(() => [settings.micOn, settings.micName], applyMic);
 watch(() => settings.bubble, syncBubble);
 watch(() => settings.hideFromCapture, (v) => void api.setCaptureHidden(v));
@@ -407,6 +431,10 @@ onMounted(async () => {
       // Durante el arranque o el corte manda el estado local.
       status.value = busy.value ? { ...s, recording: status.value.recording } : s;
       level.value = Math.max(Math.min(1, s.mic_peak * 1.6), level.value * 0.72);
+      if (audioMode.value) {
+        const on = settings.micOn && micReady.value && !(s.recording && s.paused);
+        levels.value = [...levels.value.slice(1), on ? level.value : 0];
+      }
     } catch {
       /* se reintenta en el próximo tick */
     }
@@ -453,7 +481,33 @@ onBeforeUnmount(() => {
     </header>
 
     <main ref="scroller" class="scroll">
-      <section class="stage" :class="{ live: recording && !status.paused }">
+      <div class="mode" role="radiogroup" :aria-label="t('modeLabel')">
+        <button role="radio" :aria-checked="!audioMode" :disabled="recording || !!busy" @click="settings.mode = 'video'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="13.5" height="12" rx="2.4" /><path d="m16 10.5 5.5-3v9l-5.5-3" /></svg>
+          {{ t("modeVideo") }}
+        </button>
+        <button role="radio" :aria-checked="audioMode" :disabled="recording || !!busy" @click="settings.mode = 'audio'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2.5" width="6" height="11.5" rx="3" /><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5" /></svg>
+          {{ t("modeAudio") }}
+        </button>
+      </div>
+
+      <section v-if="audioMode" class="stage audio-stage" :class="{ live: recording && !status.paused }">
+        <div class="wave" aria-hidden="true">
+          <i v-for="(l, i) in levels" :key="i" :style="{ transform: `scaleY(${Math.max(0.06, l)})` }" />
+        </div>
+        <div class="audio-label">
+          <b>{{ settings.micOn && micReady ? settings.micName : t("noMicOn") }}</b>
+          <span>{{ settings.systemOn ? t("audioPlusSystem") : t("audioOnlyMic") }}</span>
+        </div>
+        <div v-if="recording" class="rec-pill">
+          <span class="dot" :class="{ paused: status.paused }" />
+          {{ status.paused ? t("paused") : "REC" }} {{ formatClock(status.elapsed_ms) }}
+          <span v-if="currentName" class="rec-name">· {{ currentName }}</span>
+        </div>
+      </section>
+
+      <section v-else class="stage" :class="{ live: recording && !status.paused }">
         <img
           v-if="screenTarget && devices"
           v-show="screenLive"
@@ -486,7 +540,7 @@ onBeforeUnmount(() => {
 
       <section v-if="last" class="card">
         <div class="result-head">
-          <b><span class="ok">✓</span> {{ last.name || t("saved") }} · {{ formatClock(last.duration_ms) }}</b>
+          <b><span class="ok">✓</span> {{ last.name || (isAudioOnly(last) ? t("savedAudio") : t("saved")) }} · {{ formatClock(last.duration_ms) }}</b>
           <button class="ghost" @click="api.openFolder(last.dir)">{{ t("openFolder") }}</button>
         </div>
         <div v-for="tr in last.tracks" :key="tr.file" class="track" :class="{ bad: tr.error }">
@@ -505,10 +559,18 @@ onBeforeUnmount(() => {
           <button v-if="cloud.share_url" class="ghost" @click="copyLink(cloud.share_url)">{{ linkCopied ? t("copied") : t("copyLink") }}</button>
         </div>
         <div class="saved-in" :title="last.dir">{{ t("savedIn") }} <code>{{ last.dir }}</code></div>
+        <div class="ask-claude">
+          <div>
+            <b>{{ isAudioOnly(last) ? t("askAudioTitle") : t("askVideoTitle") }}</b>
+            <q>{{ claudePrompt }}</q>
+            <small v-if="!claude?.connected">{{ t("askConnectFirst") }}</small>
+          </div>
+          <button class="ghost" @click="copyPrompt">{{ promptCopied ? t("copied") : t("copyPrompt") }}</button>
+        </div>
       </section>
 
       <section class="card">
-        <div class="row" :class="{ on: settings.screenMode !== 'none' }">
+        <div v-if="!audioMode" class="row" :class="{ on: settings.screenMode !== 'none' }">
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2.5" y="4" width="19" height="13" rx="2.2" />
@@ -538,7 +600,7 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <div class="row" :class="{ on: cameraLive }">
+        <div v-if="!audioMode" class="row" :class="{ on: cameraLive }">
           <div class="ico">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2.5" y="6" width="13.5" height="12" rx="2.4" />
@@ -592,8 +654,8 @@ onBeforeUnmount(() => {
       </section>
 
       <details class="card">
-        <summary>{{ t("settings") }} <small>{{ t("settingsSummary", { fps: settings.fps, quality: t(QUALITY[settings.quality]).toLowerCase() }) }}</small></summary>
-        <div class="grid">
+        <summary>{{ t("settings") }} <small>{{ audioMode ? t("settingsAudioSummary") : t("settingsSummary", { fps: settings.fps, quality: t(QUALITY[settings.quality]).toLowerCase() }) }}</small></summary>
+        <div v-if="!audioMode" class="grid">
           <div class="field">
             <label for="fps">{{ t("frames") }}</label>
             <select id="fps" v-model.number="settings.fps" :disabled="recording">
@@ -619,15 +681,15 @@ onBeforeUnmount(() => {
             </select>
           </div>
         </div>
-        <label class="opt">
+        <label v-if="!audioMode" class="opt">
           <span>{{ t("bubble") }}<small>{{ t("bubbleHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.bubble" @click="settings.bubble = !settings.bubble" />
         </label>
-        <label class="opt">
+        <label v-if="!audioMode" class="opt">
           <span>{{ t("hideApp") }}<small>{{ t("hideAppHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.hideFromCapture" @click="settings.hideFromCapture = !settings.hideFromCapture" />
         </label>
-        <label class="opt">
+        <label v-if="!audioMode" class="opt">
           <span>{{ t("cursor") }}<small>{{ t("cursorHint") }}</small></span>
           <button class="switch" role="switch" :aria-checked="settings.cursor" :disabled="recording" @click="settings.cursor = !settings.cursor" />
         </label>
@@ -680,7 +742,9 @@ onBeforeUnmount(() => {
         <summary>{{ t("recordings") }} <small>{{ recent.length || "" }}</small></summary>
         <div v-if="!recent.length" class="empty">{{ t("noRecordings") }}</div>
         <button v-for="m in recent" :key="m.id" class="recent" :title="m.dir" @click="api.openFolder(m.dir)">
-          <span>{{ m.name || recordedAt(m) }}<br /><small>{{ m.name ? `${recordedAt(m)} · ` : "" }}{{ m.tracks.map((tr) => tr.file).join(" · ") }}</small></span>
+          <svg v-if="isAudioOnly(m)" class="kind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" :aria-label="t('modeAudio')"><rect x="9" y="2.5" width="6" height="11.5" rx="3" /><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3.5" /></svg>
+          <svg v-else class="kind" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" :aria-label="t('modeVideo')"><rect x="2.5" y="6" width="13.5" height="12" rx="2.4" /><path d="m16 10.5 5.5-3v9l-5.5-3" /></svg>
+          <span class="recent-main">{{ m.name || recordedAt(m) }}<br /><small>{{ m.name ? `${recordedAt(m)} · ` : "" }}{{ m.tracks.map((tr) => tr.file).join(" · ") }}</small></span>
           <small>{{ formatClock(m.duration_ms) }} · {{ formatSize(totalSize(m)) }}</small>
         </button>
       </details>
@@ -705,7 +769,7 @@ onBeforeUnmount(() => {
         <button class="rec-btn" :disabled="!!busy || !hasSource || !devices" @click="start">
           <span v-if="busy === 'starting'" class="spinner" />
           <i v-else />
-          {{ busy === "starting" ? t("preparing") : t("record") }}
+          {{ busy === "starting" ? t("preparing") : audioMode ? t("recordAudio") : t("record") }}
         </button>
         <div v-if="recBlocker" class="hint warn">{{ recBlocker }}</div>
         <div v-else class="hint"><kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>R</kbd> {{ t("shortcutHint") }}</div>

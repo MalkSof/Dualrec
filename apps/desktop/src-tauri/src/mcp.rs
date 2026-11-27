@@ -242,6 +242,7 @@ fn summary(m: &Manifest) -> Value {
         "recorded_at": m.recorded_at,
         "duration_seconds": m.duration_ms as f64 / 1000.0,
         "status": m.status,
+        "audio_only": !m.tracks.iter().any(|t| t.width.is_some()),
         "folder": m.dir,
         "tracks": m.tracks.iter().map(|t| json!({
             "kind": t.kind, "file": t.file, "source": t.source,
@@ -333,6 +334,16 @@ fn str_arg<'a>(args: &'a Value, key: &str, default: &'a str) -> &'a str {
     args.get(key).and_then(Value::as_str).filter(|s| !s.is_empty()).unwrap_or(default)
 }
 
+/// Color en hexadecimal (`#8b7cff` o `8b7cff`), devuelto sin el numeral.
+pub fn color_arg(args: &Value, key: &str, default: &str) -> Result<String, String> {
+    let raw = str_arg(args, key, default).trim().trim_start_matches('#');
+    if raw.len() == 6 && raw.chars().all(|c| c.is_ascii_hexdigit()) {
+        Ok(raw.to_ascii_lowercase())
+    } else {
+        Err(format!("{key} tiene que ser un color en hexadecimal, por ejemplo #8b7cff."))
+    }
+}
+
 fn segs_arg(args: &Value, key: &str) -> Result<Option<Vec<Seg>>, String> {
     let Some(list) = args.get(key).and_then(Value::as_array) else {
         return Ok(None);
@@ -362,8 +373,9 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
     let dur = rec.duration();
     let screen = rec.track("screen");
     let camera = rec.track("camera");
-    if screen.is_none() && camera.is_none() {
-        return Err("La grabación no tiene video (ni pantalla ni cámara).".into());
+    let voice = rec.track("mic").or_else(|| rec.track("system"));
+    if screen.is_none() && camera.is_none() && voice.is_none() {
+        return Err("La grabación no tiene ninguna pista que se pueda usar.".into());
     }
     let format = str_arg(a, "format", "horizontal");
     let (w, h) = match format {
@@ -374,10 +386,17 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
     };
     let default_layout = if format == "horizontal" { "pip" } else { "stack" };
     let mut layout = str_arg(a, "layout", default_layout).to_string();
-    if !["pip", "stack", "side", "screen", "camera"].contains(&layout.as_str()) {
-        return Err("layout tiene que ser pip, stack, side, screen o camera.".into());
+    if !["pip", "stack", "side", "screen", "camera", "audio"].contains(&layout.as_str()) {
+        return Err("layout tiene que ser pip, stack, side, screen, camera o audio.".into());
     }
-    if camera.is_none() {
+    if screen.is_none() && camera.is_none() {
+        // Grabación de solo audio: se arma un video con fondo y la onda de la voz.
+        layout = "audio".into();
+    } else if layout == "audio" {
+        if voice.is_none() {
+            return Err("La grabación no tiene audio para armar un video de solo audio.".into());
+        }
+    } else if camera.is_none() {
         layout = "screen".into();
     } else if screen.is_none() {
         layout = "camera".into();
@@ -418,14 +437,14 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
     let mut args: Vec<String> = ["-y", "-hide_banner", "-loglevel", "error", "-nostats"].iter().map(|s| s.to_string()).collect();
     let progress_file = format!(".{name}.progress");
     args.extend(["-progress".into(), progress_file.clone()]);
-    let mut n_inputs = 0usize;
-    let mut add_media = |args: &mut Vec<String>, p: &Path| -> usize {
+    let n_inputs = std::cell::Cell::new(0usize);
+    let add_media = |args: &mut Vec<String>, p: &Path| -> usize {
         args.extend(["-ss".into(), format!("{base:.3}"), "-t".into(), format!("{span:.3}"), "-i".into(), p.to_string_lossy().into_owned()]);
-        n_inputs += 1;
-        n_inputs - 1
+        n_inputs.set(n_inputs.get() + 1);
+        n_inputs.get() - 1
     };
-    let use_screen = layout != "camera";
-    let use_camera = layout != "screen";
+    let use_screen = !["camera", "audio"].contains(&layout.as_str());
+    let use_camera = !["screen", "audio"].contains(&layout.as_str());
     let i_screen = screen.as_deref().filter(|_| use_screen).map(|p| add_media(&mut args, p));
     let i_camera = camera.as_deref().filter(|_| use_camera).map(|p| add_media(&mut args, p));
     let mic_vol = num_arg(a, "mic_volume", 1.0, 0.0, 4.0);
@@ -445,6 +464,47 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
     }
     let mut seam: Option<u32> = None;
     match layout.as_str() {
+        "audio" => {
+            // Fondo: la imagen que se pase o un degradé que se mueve despacio.
+            let i_bg = match a.get("background_image").and_then(Value::as_str).filter(|s| !s.trim().is_empty()) {
+                Some(img) => {
+                    let img = Path::new(img.trim());
+                    if !img.is_file() {
+                        return Err(format!("No encontré la imagen de fondo {}.", img.display()));
+                    }
+                    args.extend(["-loop".into(), "1".into(), "-framerate".into(), FPS.to_string(), "-t".into(), format!("{span:.3}"), "-i".into(), img.to_string_lossy().into_owned()]);
+                    n_inputs.set(n_inputs.get() + 1);
+                    g.push(region(&format!("{}:v", n_inputs.get() - 1), "bg", w, h, true, 1.0, 0.5, 0.5));
+                    None
+                }
+                None => {
+                    let c0 = color_arg(a, "background_color", "1b1638")?;
+                    args.extend([
+                        "-f".into(), "lavfi".into(), "-t".into(), format!("{span:.3}"), "-i".into(),
+                        format!("gradients=s={w}x{h}:r={FPS}:c0=0x{c0}:c1=0x0b0d12:x0=0:y0=0:x1={w}:y1={h}:speed=0.004"),
+                    ]);
+                    n_inputs.set(n_inputs.get() + 1);
+                    Some(n_inputs.get() - 1)
+                }
+            };
+            if let Some(i) = i_bg {
+                g.push(format!("[{i}:v]format=yuv420p,setsar=1[bg]"));
+            }
+            match voice.as_deref() {
+                Some(p) if a.get("waveform").and_then(Value::as_bool).unwrap_or(true) => {
+                    let i = add_media(&mut args, p);
+                    let wave = color_arg(a, "wave_color", "8b7cff")?;
+                    let ww = even(w as f64 * 0.84);
+                    let wh = even(h as f64 * if format == "vertical" { 0.16 } else { 0.3 });
+                    let y = even(h as f64 * if format == "vertical" { 0.42 } else { 0.5 } - wh as f64 / 2.0);
+                    g.push(format!(
+                        "[{i}:a]aformat=channel_layouts=mono,showwaves=s={ww}x{wh}:mode=cline:n=1:scale=sqrt:colors=0x{wave},format=rgba[wv]"
+                    ));
+                    g.push(format!("[bg][wv]overlay=(W-w)/2:{y}:shortest=1[v0]"));
+                }
+                _ => g.push("[bg]null[v0]".into()),
+            }
+        }
         "screen" => g.push(region("sv", "v0", w, h, false, zoom, fx, fy)),
         "camera" => g.push(region("cv", "v0", w, h, true, 1.0, 0.5, 0.5)),
         "stack" => {
@@ -475,7 +535,7 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
             let mask = tmp("mask.pgm", &mask_pgm(d, shape))?;
             let ring = tmp("ring.pgm", &mask_pgm(d + 2 * border, shape))?;
             args.extend(["-i".into(), mask, "-i".into(), ring]);
-            let (i_mask, i_ring) = (n_inputs, n_inputs + 1);
+            let (i_mask, i_ring) = (n_inputs.get(), n_inputs.get() + 1);
             g.push(format!("[cv]scale={d}:{d}:force_original_aspect_ratio=increase,crop={d}:{d},format=yuva420p[cq]"));
             g.push(format!("[{i_mask}:v]format=gray[mk]"));
             g.push("[cq][mk]alphamerge[cb]".into());
@@ -501,7 +561,7 @@ fn plan_render(rec: &Rec, a: &Value) -> Result<Plan, String> {
     let title = a.get("title").and_then(Value::as_str).map(ass_text).filter(|s| !s.is_empty());
     let mut events = String::new();
     if let Some(t) = &title {
-        let secs = num_arg(a, "title_seconds", 3.5, 0.5, 600.0).min(total);
+        let secs = num_arg(a, "title_seconds", if layout == "audio" { total } else { 3.5 }, 0.5, 36_000.0).min(total);
         events.push_str(&format!("Dialogue: 0,{},{},Title,,0,0,0,,{t}\n", ass_time(0.0), ass_time(secs)));
     }
     let mut n_caps = 0;
@@ -673,7 +733,11 @@ fn tool_frames(ctx: &Ctx, a: &Value) -> Result<Vec<Value>, String> {
     let screen = rec.track("screen").filter(|_| which != "camera");
     let camera = rec.track("camera").filter(|_| which != "screen");
     if screen.is_none() && camera.is_none() {
-        return Err("La grabación no tiene esa pista de video.".into());
+        return Err(if rec.track("screen").is_none() && rec.track("camera").is_none() {
+            "Es una grabación de solo audio: no hay imágenes para ver. Usá get_recording para ver dónde se habla y render para armar el video.".into()
+        } else {
+            "La grabación no tiene esa pista de video.".into()
+        });
     }
     let dur = rec.duration();
     let mut content = Vec::new();
@@ -717,7 +781,10 @@ where the person is speaking, optionally get_frames to look at what is on screen
 For a long horizontal video use format=horizontal with layout=pip (or side) and remove_silences=true. \
 For reels, Shorts and TikToks use format=vertical with layout=stack (screen on top, camera below) or pip, pick 15 to 60 second \
 segments, and use screen_zoom with screen_focus_x/y so that the relevant part of the screen is readable on a phone. \
-You cannot hear the audio: only add captions when the user gives you the words or a transcript, and ask which moments matter \
+Some recordings are audio only (audio_only=true, for example a voice note or a podcast): render turns them into a video with \
+layout=audio, a moving gradient or a background_image the user gives you (a full file path), an animated waveform of the voice, \
+a title that stays on screen and captions. Ask the user what the audio is about to write the title, and for the words or a \
+transcript if they want captions. You cannot hear the audio: only add captions when the user gives you the words or a transcript, and ask which moments matter \
 if speech timing and frames are not enough. Times are always seconds in the original recording. \
 Exports are saved in the recording's 'exports' folder; tell the user the full path. Answer in the user's language.";
 
@@ -753,11 +820,15 @@ fn tools() -> Value {
         },
         {
             "name": "render",
-            "description": "Export a finished MP4 from a recording by combining screen, camera and audio. Makes long horizontal videos and vertical reels. Saved to the recording's exports folder. If it takes long it returns a job to check with render_status.",
+            "description": "Export a finished MP4 from a recording by combining screen, camera and audio. Makes long horizontal videos and vertical reels, and turns audio-only recordings into videos with a waveform. Saved to the recording's exports folder. If it takes long it returns a job to check with render_status.",
             "inputSchema": { "type": "object", "properties": {
                 "id": id, "folder": folder,
                 "format": { "type": "string", "enum": ["horizontal", "vertical", "square"], "description": "horizontal 1920x1080 (YouTube), vertical 1080x1920 (Reels, Shorts, TikTok), square 1080x1080." },
-                "layout": { "type": "string", "enum": ["pip", "stack", "side", "screen", "camera"], "description": "pip: screen with the camera in a bubble. stack: screen on top, camera below (best for vertical). side: screen left, camera right. screen / camera: only that source. Default: pip for horizontal, stack otherwise." },
+                "layout": { "type": "string", "enum": ["pip", "stack", "side", "screen", "camera", "audio"], "description": "pip: screen with the camera in a bubble. stack: screen on top, camera below (best for vertical). side: screen left, camera right. screen / camera: only that source. audio: background and animated waveform of the voice (always used for audio-only recordings). Default: pip for horizontal, stack otherwise." },
+                "background_image": { "type": "string", "description": "layout audio: full path of an image (JPG/PNG) to use as background, cropped to fill. Omit for a moving gradient." },
+                "background_color": { "type": "string", "description": "layout audio without image: main color of the gradient, hex like #1b1638." },
+                "waveform": { "type": "boolean", "description": "layout audio: show the animated waveform. Default true." },
+                "wave_color": { "type": "string", "description": "layout audio: waveform color, hex. Default #8b7cff." },
                 "segments": { "type": "array", "items": seg_items, "description": "Parts of the recording to keep, in seconds. They are joined in order. Omit to use the whole recording." },
                 "remove_silences": { "type": "boolean", "description": "Cut the pauses where nobody speaks (jump cuts). Default false." },
                 "silence_db": { "type": "number", "description": "Silence threshold in dB for remove_silences. Default -35." },
@@ -768,7 +839,7 @@ fn tools() -> Value {
                 "camera_size": { "type": "number", "description": "Bubble size as a percentage of the short side of the video. Default 28." },
                 "camera_shape": { "type": "string", "enum": ["circle", "rounded", "rect"] },
                 "title": { "type": "string", "description": "Hook text shown at the top during the first seconds." },
-                "title_seconds": { "type": "number", "description": "How long the title stays. Default 3.5." },
+                "title_seconds": { "type": "number", "description": "How long the title stays. Default 3.5, or the whole video for layout audio." },
                 "captions": { "type": "array", "description": "Subtitles burned into the video. Times are seconds in the ORIGINAL recording; they are shifted automatically when parts are cut.", "items": { "type": "object", "properties": { "start": { "type": "number" }, "end": { "type": "number" }, "text": { "type": "string" } }, "required": ["start", "end", "text"] } },
                 "mic_volume": { "type": "number", "description": "Voice volume, 1 = as recorded. 0 mutes it." },
                 "system_volume": { "type": "number", "description": "Computer audio volume. Default 0.6. 0 mutes it." },
@@ -969,6 +1040,15 @@ mod tests {
         assert_eq!(base64(b"f"), "Zg==");
         assert_eq!(base64(b"fo"), "Zm8=");
         assert_eq!(base64(b"foobar"), "Zm9vYmFy");
+    }
+
+    #[test]
+    fn colors_accept_hex_with_or_without_hash() {
+        assert_eq!(color_arg(&json!({ "c": "#8B7CFF" }), "c", "000000").unwrap(), "8b7cff");
+        assert_eq!(color_arg(&json!({ "c": "1b1638" }), "c", "000000").unwrap(), "1b1638");
+        assert_eq!(color_arg(&json!({}), "c", "0b0d12").unwrap(), "0b0d12");
+        assert!(color_arg(&json!({ "c": "red" }), "c", "000000").is_err());
+        assert!(color_arg(&json!({ "c": "#12345;" }), "c", "000000").is_err());
     }
 
     #[test]

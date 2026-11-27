@@ -1010,3 +1010,149 @@ kbd {
 .saved-in code {
   font-size: 11px;
 }
+
+/* ---------- Modo: video o solo audio ---------- */
+
+.mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  flex: none;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.mode button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mode button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.mode button:not(:disabled):hover {
+  color: var(--text);
+}
+
+.mode button[aria-checked="true"] {
+  background: linear-gradient(135deg, rgba(139, 124, 255, 0.28), rgba(77, 163, 255, 0.16));
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(139, 124, 255, 0.45);
+}
+
+.mode button:disabled {
+  cursor: default;
+}
+
+.audio-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.wave {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 46%;
+  width: 78%;
+}
+
+.wave i {
+  flex: 1;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  transform-origin: center;
+  transition: transform 0.12s linear;
+}
+
+.audio-stage.live .wave i {
+  background: linear-gradient(180deg, var(--rec-2), var(--rec));
+}
+
+.audio-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 86%;
+  text-align: center;
+}
+
+.audio-label b {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+
+.audio-label span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* ---------- Pedido para Claude ---------- */
+
+.ask-claude {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 14px 14px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgba(139, 124, 255, 0.14), rgba(77, 163, 255, 0.06));
+  border: 1px solid rgba(139, 124, 255, 0.3);
+}
+
+.ask-claude > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ask-claude b {
+  font-size: 12.5px;
+}
+
+.ask-claude q {
+  font-size: 12.5px;
+  color: var(--text);
+  opacity: 0.85;
+  user-select: text;
+}
+
+.ask-claude small {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.ask-claude button {
+  flex: none;
+}
+
+/* ---------- Lista de grabaciones ---------- */
+
+.recent .kind {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+}
